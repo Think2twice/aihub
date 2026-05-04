@@ -75,6 +75,29 @@ function timeAgo(dateStr: string): string {
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('tools')
+  // 权限检查
+  const [authChecked, setAuthChecked] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  
+  useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    if (!userStr) {
+      window.location.href = '/login?redirect=/admin'
+      return
+    }
+    try {
+      const user = JSON.parse(userStr)
+      if (user.role === 'ADMIN') {
+        setIsAdmin(true)
+      } else {
+        window.location.href = '/'
+      }
+    } catch {
+      window.location.href = '/login?redirect=/admin'
+    } finally {
+      setAuthChecked(true)
+    }
+  }, [])
   
   // 工具审核状态
   const [tools, setTools] = useState<Tool[]>([])
@@ -463,7 +486,14 @@ export default function AdminPage() {
     }
   }, [activeTab, verifyLogSuccessFilter])
 
-  return (
+  return !authChecked ? (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4" />
+        <p className="text-gray-500">验证身份中...</p>
+      </div>
+    </div>
+  ) : !isAdmin ? null : (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
