@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ToolCard from '@/components/ToolCard'
 
+export const dynamic = 'force-dynamic'
+
 // Glitch Heading Component
 function GlitchHeading({ text, className = '' }: { text: string; className?: string }) {
   return (
