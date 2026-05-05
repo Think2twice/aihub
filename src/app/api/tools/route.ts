@@ -89,15 +89,22 @@ export async function POST(request: NextRequest) {
       categoryName = category?.name || null
     }
 
-    // 创建 shares 记录（用户提交的工具显示在工具圈）
+    // 检查用户是否站长（ADMIN），站长自动通过审核
     const submitterId = userId ? parseInt(userId) : null
+    let toolStatus = 'pending'
+    if (submitterId) {
+      const user = await prisma.user.findUnique({ where: { id: submitterId }, select: { role: true } })
+      if (user?.role === 'ADMIN') toolStatus = 'approved'
+    }
+
+    // 创建 shares 记录（用户提交的工具显示在工具圈）
     const share = await prisma.share.create({
       data: {
         type: 'tool',
         content: description?.trim() || shortDesc.trim(),
         images: images?.length > 0 ? JSON.stringify(images) : null,
         userId: submitterId!,
-        status: 'pending',
+        status: toolStatus,
         // 存储用户提交的工具信息
         submitToolName: name.trim(),
         submitToolWebsite: websiteUrl.trim(),
@@ -111,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       share,
-      message: '提交成功，等待审核' 
+      message: toolStatus === 'approved' ? '提交成功，已自动发布' : '提交成功，等待审核' 
     }, { status: 201 })
 
   } catch (error: any) {

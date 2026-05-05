@@ -129,37 +129,62 @@ async function fetchRSS(source: typeof RSS_SOURCES[0]) {
       const existing = await prisma.news.findFirst({
         where: { sourceUrl: item.link }
       })
-      
+
       if (existing) {
         skipped++
         continue
       }
-      
+
       // 提取并清理内容
       const rawContent = item['content:encoded'] || item.content || item.summary || ''
       const content = stripHtml(rawContent)
       const summary = extractSummary(content) || item.title
-      
+
       // 解析发布时间
       const publishedAt = item.pubDate ? new Date(item.pubDate) : new Date()
-      
+
       // 生成slug
       const slug = generateSlug(item.title)
-      
-      // 插入数据库
-      await prisma.news.create({
-        data: {
-          title: item.title,
-          slug: slug,
-          summary: summary,
-          content: content,
-          sourceUrl: item.link,
-          sourceName: source.name,
-          publishedAt: publishedAt,
-          isAutoCrawled: true,
-          viewCount: 0
-        }
+
+      // 检查slug是否已存在（slug有唯一约束）
+      const existingSlug = await prisma.news.findUnique({
+        where: { slug: slug }
       })
+
+      if (existingSlug) {
+        // slug冲突，生成新的唯一slug
+        const uniqueSlug = slug + '-' + Math.random().toString(36).slice(2, 7)
+        console.log(`  ⚠ slug冲突，使用: ${uniqueSlug}`)
+        // 插入数据库（使用唯一slug）
+        await prisma.news.create({
+          data: {
+            title: item.title,
+            slug: uniqueSlug,
+            summary: summary,
+            content: content,
+            sourceUrl: item.link,
+            sourceName: source.name,
+            publishedAt: publishedAt,
+            isAutoCrawled: true,
+            viewCount: 0
+          }
+        })
+      } else {
+        // 插入数据库
+        await prisma.news.create({
+          data: {
+            title: item.title,
+            slug: slug,
+            summary: summary,
+            content: content,
+            sourceUrl: item.link,
+            sourceName: source.name,
+            publishedAt: publishedAt,
+            isAutoCrawled: true,
+            viewCount: 0
+          }
+        })
+      }
       
       inserted++
       console.log(`  ✓ 新增: ${item.title.slice(0, 50)}...`)

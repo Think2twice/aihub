@@ -181,9 +181,14 @@ export async function POST(request: NextRequest) {
     const shareType = type || 'tool'
     const toolIdValue = toolId ? parseInt(toolId) : null
     
+    // 站长发布自动通过
+    let shareStatus = 'pending'
+    const poster = await prisma.user.findUnique({ where: { id: parseInt(userId) }, select: { role: true } })
+    if (poster?.role === 'ADMIN') shareStatus = 'approved'
+    
     const result = await prisma.$queryRaw`
       INSERT INTO shares (type, content, "toolId", "userId", images, video, status, likes, "createdAt", "updatedAt")
-      VALUES (${shareType}, ${content.trim()}, ${toolIdValue}, ${parseInt(userId)}, ${imagesJson}, ${video}, 'pending', 0, NOW(), NOW())
+      VALUES (${shareType}, ${content.trim()}, ${toolIdValue}, ${parseInt(userId)}, ${imagesJson}, ${video}, ${shareStatus}, 0, NOW(), NOW())
       RETURNING *
     `
     const share = (result as any[])[0]
