@@ -96,9 +96,9 @@ export async function GET(
 
     const user = await prisma.$queryRaw`
       SELECT 
-        id, username, email, avatarUrl, bio, location, website,
-        role, status, bannedAt, bannedUntil, bannedReason, bannedBy,
-        createdAt, updatedAt
+        id, username, email, "avatarUrl", bio, location, website,
+        role, status, "bannedAt", "bannedUntil", "bannedReason", "bannedBy",
+        "createdAt", "updatedAt"
       FROM users
       WHERE id = ${userId}
       LIMIT 1
@@ -111,9 +111,9 @@ export async function GET(
     // 获取用户统计数据
     const stats = await prisma.$queryRaw`
       SELECT 
-        (SELECT COUNT(*) FROM shares WHERE userId = ${userId}) as sharesCount,
-        (SELECT COUNT(*) FROM comments WHERE userId = ${userId}) as commentsCount,
-        (SELECT COUNT(*) FROM share_comments WHERE userId = ${userId}) as shareCommentsCount
+        (SELECT COUNT(*) FROM shares WHERE "userId" = ${userId}) as "sharesCount",
+        (SELECT COUNT(*) FROM comments WHERE "userId" = ${userId}) as "commentsCount",
+        (SELECT COUNT(*) FROM share_comments WHERE "userId" = ${userId}) as "shareCommentsCount"
     `
 
     return NextResponse.json({

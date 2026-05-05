@@ -27,11 +27,11 @@ export async function GET(request: NextRequest) {
         t.websiteUrl as toolWebsiteUrl,
         c.name as categoryName,
         c.slug as categorySlug,
-        (SELECT COUNT(*) FROM comments WHERE shareId = s.id) as commentsCount
+        (SELECT COUNT(*) FROM comments WHERE "shareId" = s.id) as "commentsCount"
       FROM shares s
-      LEFT JOIN users u ON s.userId = u.id
-      LEFT JOIN tools t ON s.toolId = t.id
-      LEFT JOIN categories c ON t.categoryId = c.id
+      LEFT JOIN users u ON s."userId" = u.id
+      LEFT JOIN tools t ON s."toolId" = t.id
+      LEFT JOIN categories c ON t."categoryId" = c.id
       WHERE s."userId" = ${parseInt(userId)}
       ORDER BY s."createdAt" DESC
       LIMIT ${limit} OFFSET ${skip}
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     // 获取总数
     const totalResult = await prisma.$queryRawUnsafe(`
-      SELECT COUNT(*) as count FROM shares WHERE userId = ${parseInt(userId)}
+      SELECT COUNT(*) as count FROM shares WHERE "userId" = ${parseInt(userId)}
     `)
     const total = Number((totalResult as any)[0].count)
 

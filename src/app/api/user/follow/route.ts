@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // 检查是否已经关注
     const existing = await prisma.$queryRaw`
       SELECT id FROM follows 
-      WHERE followerId = ${parseInt(followerId)} AND followingId = ${parseInt(followingId)}
+      WHERE "followerId" = ${parseInt(followerId)} AND "followingId" = ${parseInt(followingId)}
       LIMIT 1
     `
 
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
       // 已关注 -> 取消关注
       await prisma.$executeRaw`
         DELETE FROM follows 
-        WHERE followerId = ${parseInt(followerId)} AND followingId = ${parseInt(followingId)}
+        WHERE "followerId" = ${parseInt(followerId)} AND "followingId" = ${parseInt(followingId)}
       `
       return NextResponse.json({ following: false, message: '已取消关注' })
     } else {
       // 未关注 -> 关注
       await prisma.$executeRaw`
-        INSERT INTO follows (followerId, followingId, createdAt)
+        INSERT INTO follows ("followerId", "followingId", "createdAt")
         VALUES (${parseInt(followerId)}, ${parseInt(followingId)}, NOW())
       `
       return NextResponse.json({ following: true, message: '关注成功' })
@@ -70,10 +70,10 @@ export async function GET(request: NextRequest) {
       // 获取关注数和粉丝数
       const [followingCount, followerCount] = await Promise.all([
         prisma.$queryRaw`
-          SELECT COUNT(*) as count FROM follows WHERE followerId = ${parseInt(userId)}
+          SELECT COUNT(*) as count FROM follows WHERE "followerId" = ${parseInt(userId)}
         `,
         prisma.$queryRaw`
-          SELECT COUNT(*) as count FROM follows WHERE followingId = ${parseInt(userId)}
+          SELECT COUNT(*) as count FROM follows WHERE "followingId" = ${parseInt(userId)}
         `
       ])
 
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
         `)
         
         const totalResult = await prisma.$queryRawUnsafe(`
-          SELECT COUNT(*) as count FROM follows WHERE followingId = ${parseInt(userId)}
+          SELECT COUNT(*) as count FROM follows WHERE "followingId" = ${parseInt(userId)}
         `)
         const total = Number((totalResult as any[])[0]?.count || 0)
 
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
         `)
 
         const totalResult = await prisma.$queryRawUnsafe(`
-          SELECT COUNT(*) as count FROM follows WHERE followerId = ${parseInt(userId)}
+          SELECT COUNT(*) as count FROM follows WHERE "followerId" = ${parseInt(userId)}
         `)
         const total = Number((totalResult as any[])[0]?.count || 0)
 
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
       // 检查是否已关注
       const result = await prisma.$queryRaw`
         SELECT id FROM follows 
-        WHERE followerId = ${parseInt(userId)} AND followingId = ${parseInt(targetId)}
+        WHERE "followerId" = ${parseInt(userId)} AND "followingId" = ${parseInt(targetId)}
         LIMIT 1
       `
       return NextResponse.json({

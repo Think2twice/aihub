@@ -48,7 +48,7 @@ export async function GET(
     // 总计
     const totalResult = await prisma.$queryRawUnsafe(`
       SELECT COUNT(*) as count FROM shares 
-      WHERE userId = ${userId} AND status = 'approved' AND likes > 0
+      WHERE "userId" = ${userId} AND status = 'approved' AND likes > 0
     `)
     const total = Number((totalResult as any[])[0]?.count || 0)
 
