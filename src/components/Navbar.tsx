@@ -219,7 +219,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-0.5 md:gap-1 min-w-0 flex-shrink">
+            <div className="hidden md:flex items-center gap-0.5 md:gap-1 flex-shrink">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -319,7 +319,7 @@ export default function Navbar() {
               
               {/* 用户入口 */}
               {user ? (
-                <div className="relative group">
+                <div className="relative group" style={{overflow:'visible'}}>
                   <Link 
                     href="/user-center"
                     className="flex items-center gap-2 px-2 md:px-3 py-2 border border-cyber-border hover:border-neon-green transition-colors"
@@ -335,16 +335,14 @@ export default function Navbar() {
                   </Link>
                   {/* 下拉菜单 */}
                   <div className="absolute right-0 top-full mt-1 bg-[#12121a] border border-[#2a2a3a] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[999]"
-                    style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
+                    style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))', width: '200px', whiteSpace: 'nowrap' }}
                   >
-                    <div style={{width:'max-content',minWidth:'180px'}}>
-                    <Link href="/user-center" className="block px-4 py-2 text-xs text-[#e0e0e0] font-mono hover:bg-[#1c1c2e] transition-colors whitespace-nowrap">👤 用户中心</Link>
-                    <Link href="/user-center/edit" className="block px-4 py-2 text-xs text-[#e0e0e0] font-mono hover:bg-[#1c1c2e] transition-colors whitespace-nowrap">⚙️ 设置</Link>
+                    <Link href="/user-center" className="block px-4 py-2 text-xs text-[#e0e0e0] font-mono hover:bg-[#1c1c2e] transition-colors">👤 用户中心</Link>
+                    <Link href="/user-center/edit" className="block px-4 py-2 text-xs text-[#e0e0e0] font-mono hover:bg-[#1c1c2e] transition-colors">⚙️ 设置</Link>
                     <button 
                       onClick={() => { localStorage.removeItem('user'); window.location.href = '/' }}
-                      className="block w-full text-left px-4 py-2 text-xs text-[#ff3366] font-mono hover:bg-[#1c1c2e] transition-colors whitespace-nowrap"
+                      className="block w-full text-left px-4 py-2 text-xs text-[#ff3366] font-mono hover:bg-[#1c1c2e] transition-colors"
                     >🚪 退出登录</button>
-                    </div>
                   </div>
                 </div>
               ) : (
