@@ -23,19 +23,19 @@ export async function GET(
     const comments = await prisma.$queryRaw`
       SELECT 
         c.*,
-        u.username as userName,
-        u.avatarUrl as userAvatarUrl
+        u.username as "userName",
+        u."avatarUrl" as "userAvatarUrl"
       FROM comments c
-      LEFT JOIN users u ON c.userId = u.id
-      WHERE c.toolId = ${toolId}
+      LEFT JOIN users u ON c."userId" = u.id
+      WHERE c."toolId" = ${toolId}
         AND (c.status IS NULL OR c.status = 'approved')
-      ORDER BY c.createdAt DESC
+      ORDER BY c."createdAt" DESC
       LIMIT ${limit} OFFSET ${skip}
     `
 
     const totalResult = await prisma.$queryRaw`
       SELECT COUNT(*) as count FROM comments 
-      WHERE toolId = ${toolId} 
+      WHERE "toolId" = ${toolId} 
         AND (status IS NULL OR status = 'approved')
     `
     const total = Number((totalResult as any)[0].count)
@@ -81,7 +81,7 @@ export async function POST(
 
     // 创建评论到 comments 表，使用 toolId 字段
     await prisma.$executeRaw`
-      INSERT INTO comments (content, userId, toolId, targetType, createdAt, updatedAt)
+      INSERT INTO comments (content, "userId", "toolId", "targetType", "createdAt", "updatedAt")
       VALUES (${content.trim()}, ${userId}, ${toolId}, 'tool', NOW(), NOW())
     `
 
@@ -89,14 +89,14 @@ export async function POST(
     const newComment = await prisma.$queryRaw`
       SELECT 
         c.*,
-        u.username as userName,
-        u.avatarUrl as userAvatarUrl,
-        t.name as toolName
+        u.username as "userName",
+        u."avatarUrl" as "userAvatarUrl",
+        t.name as "toolName"
       FROM comments c
-      LEFT JOIN users u ON c.userId = u.id
-      LEFT JOIN tools t ON c.toolId = t.id
-      WHERE c.toolId = ${toolId}
-      ORDER BY c.createdAt DESC
+      LEFT JOIN users u ON c."userId" = u.id
+      LEFT JOIN tools t ON c."toolId" = t.id
+      WHERE c."toolId" = ${toolId}
+      ORDER BY c."createdAt" DESC
       LIMIT 1
     `
 
