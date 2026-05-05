@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
 
-// POST /api/user/avatar - 上传头像
+export const dynamic = 'force-dynamic'
+
+// POST /api/user/avatar - 上传头像（Base64 方案，兼容 Vercel 无服务器环境）
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -20,41 +20,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '只支持 JPG/PNG/GIF/WebP 格式' }, { status: 400 })
     }
 
-    // 验证文件大小（最大 2MB）
-    if (file.size > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: '头像文件不能超过 2MB' }, { status: 400 })
+    // 验证文件大小（最大 1MB）
+    if (file.size > 1 * 1024 * 1024) {
+      return NextResponse.json({ error: '头像文件不能超过 1MB' }, { status: 400 })
     }
 
-    // 读取文件内容
+    // 读取文件内容 → base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-
-    // 生成文件名：userId_时间戳.扩展名
-    const ext = file.type.split('/')[1] || 'png'
-    const filename = `user_${userId}_${Date.now()}.${ext}`
-
-    // 确保目录存在
-    const avatarsDir = path.join(process.cwd(), 'public', 'avatars')
-    await mkdir(avatarsDir, { recursive: true })
-
-    // 写入文件
-    const filepath = path.join(avatarsDir, filename)
-    await writeFile(filepath, buffer)
-
-    // 头像 URL（相对于 public 目录）
-    const avatarUrl = `/avatars/${filename}`
+    const base64 = buffer.toString('base64')
+    const avatarUrl = `data:${file.type};base64,${base64}`
 
     // 更新数据库
     await prisma.$executeRaw`
       UPDATE users 
-      SET avatarUrl = ${avatarUrl},
-          updatedAt = NOW()
+      SET "avatarUrl" = ${avatarUrl},
+          "updatedAt" = NOW()
       WHERE id = ${parseInt(userId)}
     `
 
     // 获取更新后的用户信息
     const updatedUser = await prisma.$queryRaw`
-      SELECT id, username, email, avatarUrl, bio, location, website, createdAt
+      SELECT id, username, email, "avatarUrl", bio, location, website, "createdAt"
       FROM users
       WHERE id = ${parseInt(userId)}
       LIMIT 1
@@ -81,20 +68,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: '缺少用户ID' }, { status: 400 })
     }
 
-    // 获取当前头像URL
-    const user = await prisma.$queryRaw`
-      SELECT avatarUrl FROM users WHERE id = ${parseInt(userId)} LIMIT 1
+    // 清除头像URL
+    await prisma.$executeRaw`
+      UPDATE users 
+      SET "avatarUrl" = NULL,
+          "updatedAt" = NOW()
+      WHERE id = ${parseInt(userId)}
     `
-
-    if (Array.isArray(user) && user.length > 0 && user[0].avatarUrl) {
-      // 清除头像URL
-      await prisma.$executeRaw`
-        UPDATE users 
-        SET avatarUrl = NULL,
-            updatedAt = NOW()
-        WHERE id = ${parseInt(userId)}
-      `
-    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
