@@ -17,16 +17,16 @@ export async function GET(
     const comments = await prisma.$queryRaw`
       SELECT 
         c.*,
-        u.username as userName,
-        u.avatarUrl as userAvatarUrl,
-        pu.username as parentUserName
+        u.username as "userName",
+        u."avatarUrl" as "userAvatarUrl",
+        pu.username as "parentUserName"
       FROM share_comments c
-      LEFT JOIN users u ON c.userId = u.id
-      LEFT JOIN share_comments pc ON c.parentId = pc.id
-      LEFT JOIN users pu ON pc.userId = pu.id
-      WHERE c.shareId = ${shareId}
+      LEFT JOIN users u ON c."userId" = u.id
+      LEFT JOIN share_comments pc ON c."parentId" = pc.id
+      LEFT JOIN users pu ON pc."userId" = pu.id
+      WHERE c."shareId" = ${shareId}
         AND (c.status IS NULL OR c.status = 'approved')
-      ORDER BY c.createdAt DESC
+      ORDER BY c."createdAt" DESC
     `
 
     return NextResponse.json({ comments })
@@ -67,13 +67,13 @@ export async function POST(
     if (parentId) {
       // 回复评论
       await prisma.$executeRaw`
-        INSERT INTO share_comments (content, userId, shareId, parentId, createdAt, updatedAt)
+        INSERT INTO share_comments (content, "userId", "shareId", "parentId", "createdAt", "updatedAt")
         VALUES (${content.trim()}, ${userId}, ${shareId}, ${parentId}, NOW(), NOW())
       `
     } else {
       // 主评论
       await prisma.$executeRaw`
-        INSERT INTO share_comments (content, userId, shareId, createdAt, updatedAt)
+        INSERT INTO share_comments (content, "userId", "shareId", "createdAt", "updatedAt")
         VALUES (${content.trim()}, ${userId}, ${shareId}, NOW(), NOW())
       `
     }
@@ -82,15 +82,15 @@ export async function POST(
     const newComment = await prisma.$queryRaw`
       SELECT 
         c.*,
-        u.username as userName,
-        u.avatarUrl as userAvatarUrl,
-        pu.username as parentUserName
+        u.username as "userName",
+        u."avatarUrl" as "userAvatarUrl",
+        pu.username as "parentUserName"
       FROM share_comments c
-      LEFT JOIN users u ON c.userId = u.id
-      LEFT JOIN share_comments pc ON c.parentId = pc.id
-      LEFT JOIN users pu ON pc.userId = pu.id
-      WHERE c.shareId = ${shareId}
-      ORDER BY c.createdAt DESC
+      LEFT JOIN users u ON c."userId" = u.id
+      LEFT JOIN share_comments pc ON c."parentId" = pc.id
+      LEFT JOIN users pu ON pc."userId" = pu.id
+      WHERE c."shareId" = ${shareId}
+      ORDER BY c."createdAt" DESC
       LIMIT 1
     `
 
