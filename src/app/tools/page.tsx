@@ -41,7 +41,7 @@ export default async function ToolsPage({
     const keywordConditions = keywords.map(k => `
       (
         LOWER(t.name) LIKE '%${k}%'
-        OR LOWER(t.shortDesc) LIKE '%${k}%'
+        OR LOWER(t."shortDesc") LIKE '%${k}%'
         OR LOWER(t.tags) LIKE '%${k}%'
         OR LOWER(t.description) LIKE '%${k}%'
       )
@@ -56,15 +56,15 @@ export default async function ToolsPage({
     // 构建开源条件
     let sourceCondition = ''
     if (source === 'opensource') {
-      sourceCondition = 'AND t.isOpenSource = 1'
+      sourceCondition = 'AND t."isOpenSource" = true'
     } else if (source === 'closedsource') {
-      sourceCondition = 'AND t.isOpenSource = 0'
+      sourceCondition = 'AND t."isOpenSource" = false'
     }
     
     // 获取总数
     const countResult = await prisma.$queryRawUnsafe<{count: bigint}[]>(`
       SELECT COUNT(*) as count FROM tools t
-      LEFT JOIN categories c ON t.categoryId = c.id
+      LEFT JOIN categories c ON t."categoryId" = c.id
       WHERE t.status = 'approved'
         AND (${keywordConditions})
         ${categoryCondition}
@@ -81,24 +81,24 @@ export default async function ToolsPage({
            WHEN LOWER(t.name) LIKE '${k}%' THEN 80
            WHEN LOWER(t.name) LIKE '%${k}%' THEN 60
            WHEN LOWER(t.tags) LIKE '%${k}%' THEN 40
-           WHEN LOWER(t.shortDesc) LIKE '%${k}%' THEN 30
+           WHEN LOWER(t."shortDesc") LIKE '%${k}%' THEN 30
            WHEN LOWER(t.description) LIKE '%${k}%' THEN 20
            ELSE 0 END
     `).join(' + ')
     
     tools = await prisma.$queryRawUnsafe(`
       SELECT
-        t.id, t.name, t.slug, t.shortDesc, t.logoUrl, t.stars, t.upvotes, t.viewCount,
-        t.websiteUrl, t.githubUrl, t.pricingType, t.isOpenSource, t.tags,
-        c.name as categoryName, c.slug as categorySlug,
-        (${keywordScore}) as relevanceScore
+        t.id, t.name, t.slug, t."shortDesc", t."logoUrl", t.stars, t.upvotes, t."viewCount",
+        t."websiteUrl", t."githubUrl", t."pricingType", t."isOpenSource", t.tags,
+        c.name as "categoryName", c.slug as "categorySlug",
+        (${keywordScore}) as "relevanceScore"
       FROM tools t
-      LEFT JOIN categories c ON t.categoryId = c.id
+      LEFT JOIN categories c ON t."categoryId" = c.id
       WHERE t.status = 'approved'
         AND (${keywordConditions})
         ${categoryCondition}
         ${sourceCondition}
-      ORDER BY relevanceScore DESC, t.stars DESC
+      ORDER BY "relevanceScore" DESC, t.stars DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `)
     
