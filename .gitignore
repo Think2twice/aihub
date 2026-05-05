@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# Backups
+*.bak
+
 # Environment variables
 .env
 .env.local
