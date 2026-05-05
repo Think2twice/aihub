@@ -24,7 +24,8 @@ export async function GET(
       SELECT 
         c.*,
         u.username as "userName",
-        u."avatarUrl" as "userAvatarUrl"
+        u."avatarUrl" as "userAvatarUrl",
+        u.role as "userRole"
       FROM comments c
       LEFT JOIN users u ON c."userId" = u.id
       WHERE c."toolId" = ${toolId}
@@ -91,6 +92,7 @@ export async function POST(
         c.*,
         u.username as "userName",
         u."avatarUrl" as "userAvatarUrl",
+        u.role as "userRole",
         t.name as "toolName"
       FROM comments c
       LEFT JOIN users u ON c."userId" = u.id

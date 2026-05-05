@@ -19,6 +19,7 @@ export async function GET(
         c.*,
         u.username as "userName",
         u."avatarUrl" as "userAvatarUrl",
+        u.role as "userRole",
         pu.username as "parentUserName"
       FROM share_comments c
       LEFT JOIN users u ON c."userId" = u.id
@@ -84,6 +85,7 @@ export async function POST(
         c.*,
         u.username as "userName",
         u."avatarUrl" as "userAvatarUrl",
+        u.role as "userRole",
         pu.username as "parentUserName"
       FROM share_comments c
       LEFT JOIN users u ON c."userId" = u.id

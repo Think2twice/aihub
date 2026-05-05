@@ -20,7 +20,7 @@ interface ShareComment {
   content: string
   likes: number
   createdAt: string
-  user: { id: number; username: string; avatarUrl: string | null }
+  user: { id: number; username: string; avatarUrl: string | null; role?: string }
   replies?: ShareComment[]
   _count?: { replies: number }
 }
@@ -106,7 +106,8 @@ export default function ToolShareSection({ toolId, toolName, toolSlug, toolDesc 
             user: {
               id: c.userId,
               username: c.userName || '匿名用户',
-              avatarUrl: isAI ? '/avatars/ai-lobster.svg' : c.userAvatarUrl
+              avatarUrl: isAI ? '/avatars/ai-lobster.svg' : c.userAvatarUrl,
+              role: c.userRole
             }
           }
         })
@@ -248,7 +249,8 @@ export default function ToolShareSection({ toolId, toolName, toolSlug, toolDesc 
           user: {
             id: data.comment.userId,
             username: data.comment.userName || '匿名用户',
-            avatarUrl: data.comment.userAvatarUrl
+            avatarUrl: data.comment.userAvatarUrl,
+            role: data.comment.userRole
           }
         }
         setComments(prev => [newComment, ...prev])
@@ -584,6 +586,13 @@ export default function ToolShareSection({ toolId, toolName, toolSlug, toolDesc 
                       >
                         <img src="/avatars/ai-lobster.svg" alt="AI" className="w-full h-full object-cover" />
                       </div>
+                    ) : item.user.avatarUrl ? (
+                      <div
+                        className="w-9 h-9 flex items-center justify-center flex-shrink-0 overflow-hidden"
+                        style={{ clipPath: 'polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px))' }}
+                      >
+                        <img src={item.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                      </div>
                     ) : (
                       <div
                         className="w-9 h-9 flex items-center justify-center text-cyber-background text-sm font-bold flex-shrink-0 font-orbitron"
@@ -607,6 +616,18 @@ export default function ToolShareSection({ toolId, toolName, toolSlug, toolDesc 
                           </span>
                         ) : (
                           <span className="font-medium text-cyber-foreground text-sm font-orbitron">{item.user.username}</span>
+                        )}
+                        {item.user.role === 'ADMIN' && (
+                          <span 
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold"
+                            style={{ 
+                              background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
+                              color: '#000',
+                              clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px))'
+                            }}
+                          >
+                            👑 站长
+                          </span>
                         )}
                         <span className="text-xs text-cyber-muted-foreground font-mono">{timeAgo(item.createdAt)}</span>
                       </div>

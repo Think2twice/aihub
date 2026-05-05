@@ -53,7 +53,8 @@ interface Comment {
   user: { 
     id: number
     name: string
-    avatar: string 
+    avatar: string
+    role?: string
   }
   content: string
   time: string
@@ -186,7 +187,8 @@ export default function UserShareCard({ share }: UserShareCardProps) {
             id: c.id,
             user: { 
               id: c.userId || 0,
-              name: c.userName || '匿名用户', 
+              name: c.userName || '匿名用户',
+              role: c.userRole || c.role || undefined,
               avatar: isAI ? '/avatars/ai-lobster.svg' : (c.userAvatarUrl || '/default-avatar.png')
             },
             content: c.content,
@@ -1051,7 +1053,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
                             clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))'
                           }}
                         />
-                      ) : item.user.avatar && item.user.avatar.startsWith('/') ? (
+                      ) : item.user.avatar && (item.user.avatar.startsWith('/') || item.user.avatar.startsWith('data:')) ? (
                         <img 
                           src={item.user.avatar}
                           alt={item.user.name}
@@ -1093,7 +1095,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
                               作者
                             </span>
                           )}
-                          {item.user.name === '管理员' && !isAIUser(item.user.name) && (
+                          {item.user.role === 'ADMIN' && !isAIUser(item.user.name) && (
                             <span 
                               className="px-1.5 py-0.5 text-[10px] font-bold"
                               style={{ 
