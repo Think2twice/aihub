@@ -400,51 +400,54 @@ export default function ToolShareSection({ toolId, toolName, toolSlug, toolDesc 
                 )}
 
                 {/* 工具栏 */}
-                <div className="flex items-center justify-between px-4 pb-3 border-t border-cyber-border pt-3">
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        console.log('Emoji clicked in ToolShareSection')
-                        setShowEmoji(prev => !prev)
-                      }}
-                      className="p-2 text-cyber-muted-foreground hover:bg-cyber-muted/30 transition-colors rounded"
-                      title="表情"
-                    >
-                      <Smile className="w-4 h-4 pointer-events-none" />
-                    </button>
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadedImages.length >= 4}
-                      className="p-2 text-cyber-muted-foreground hover:bg-cyber-muted/30 transition-colors disabled:opacity-40"
-                      style={{ clipPath: 'polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px))' }}
-                      title="图片（最多4张）"
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                    </button>
-                    <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
-                    <div className="flex gap-1 ml-1 flex-nowrap overflow-x-auto">
-                      {HOT_TOPICS.slice(0, 3).map(topic => (
-                        <button
-                          key={topic}
-                          onClick={() => addTopic(topic)}
-                          className="px-1.5 md:px-2 py-1 bg-neon-cyan/10 text-neon-cyan text-[10px] md:text-xs whitespace-nowrap hover:bg-neon-cyan/20 transition-colors font-mono flex-shrink-0"
-                          style={{ clipPath: 'polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px))' }}
-                        >
-                          {topic}
-                        </button>
-                      ))}
+                <div className="px-4 pb-3 border-t border-cyber-border pt-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          console.log('Emoji clicked in ToolShareSection')
+                          setShowEmoji(prev => !prev)
+                        }}
+                        className="p-2 text-cyber-muted-foreground hover:bg-cyber-muted/30 transition-colors rounded"
+                        title="表情"
+                      >
+                        <Smile className="w-4 h-4 pointer-events-none" />
+                      </button>
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadedImages.length >= 4}
+                        className="p-2 text-cyber-muted-foreground hover:bg-cyber-muted/30 transition-colors disabled:opacity-40"
+                        style={{ clipPath: 'polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px))' }}
+                        title="图片（最多4张）"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                      </button>
+                      <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
                     </div>
+                    <button
+                      onClick={submitShare}
+                      disabled={!shareContent.trim() || isSubmitting}
+                      className="flex items-center gap-2 px-5 py-2 bg-neon-cyan text-cyber-background font-orbitron font-medium hover:shadow-neon-cyan disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                      style={{ clipPath: 'polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px))' }}
+                    >
+                      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      {isSubmitting ? '发布中...' : '发布'}
+                    </button>
                   </div>
-                  <button
-                    onClick={submitShare}
-                    disabled={!shareContent.trim() || isSubmitting}
-                    className="flex items-center gap-2 px-5 py-2 bg-neon-cyan text-cyber-background font-orbitron font-medium hover:shadow-neon-cyan disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    style={{ clipPath: 'polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px))' }}
-                  >
-                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                    {isSubmitting ? '发布中...' : '发布'}
-                  </button>
+                  {/* 热门话题 - 单独一行 */}
+                  <div className="flex gap-1.5 mt-2 overflow-x-auto">
+                    {HOT_TOPICS.slice(0, 3).map(topic => (
+                      <button
+                        key={topic}
+                        onClick={() => addTopic(topic)}
+                        className="px-2 py-1 bg-neon-cyan/10 text-neon-cyan text-[11px] whitespace-nowrap hover:bg-neon-cyan/20 transition-colors font-mono flex-shrink-0"
+                        style={{ clipPath: 'polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px))' }}
+                      >
+                        {topic}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
