@@ -22,10 +22,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 邮箱格式校验
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: '邮箱格式不正确' }, { status: 400 })
+    // 邮箱格式校验（仅支持QQ邮箱）
+    if (!email.endsWith('@qq.com')) {
+      return NextResponse.json({ error: '目前仅支持QQ邮箱注册' }, { status: 400 })
     }
 
     // 校验验证码

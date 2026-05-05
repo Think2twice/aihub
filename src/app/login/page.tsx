@@ -36,8 +36,7 @@ export default function LoginPage() {
   // 发送验证码
   const handleSendCode = async () => {
     if (!formData.email) { setError('请先输入邮箱地址'); return }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) { setError('邮箱格式不正确'); return }
+    if (!formData.email.endsWith('@qq.com')) { setError('目前仅支持QQ邮箱注册'); return }
 
     setSendingCode(true); setError(''); setCodeSuccess('')
     try {
