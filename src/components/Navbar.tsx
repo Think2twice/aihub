@@ -349,6 +349,11 @@ export default function Navbar() {
 
             {/* Mobile Actions */}
             <div className="flex items-center gap-2 md:hidden">
+              {/* Mobile Theme Toggle */}
+              <div className="scale-75 origin-right">
+                <ThemeToggle />
+              </div>
+              
               {/* Mobile Search Button */}
               <button
                 className="p-2 text-cyber-foreground hover:text-neon-green hover:bg-neon-green/10 clip-chamfer-sm transition-colors"
