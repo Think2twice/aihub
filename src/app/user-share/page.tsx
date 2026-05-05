@@ -55,7 +55,8 @@ async function getToolShares(sort?: string, search?: string) {
       user: {
         select: {
           username: true,
-          avatarUrl: true
+          avatarUrl: true,
+          role: true
         }
       },
       tool: {
@@ -77,9 +78,9 @@ async function getToolShares(sort?: string, search?: string) {
         }
       }
     },
-    orderBy: sort === 'hot' || sort === 'mostLiked'
-      ? [{ likes: 'desc' }, { createdAt: 'desc' }]
-      : { createdAt: 'desc' },
+    orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
+      ? { likes: 'desc' }
+      : { createdAt: 'desc' }],
     take: 24
   })
 
@@ -105,6 +106,7 @@ async function getToolShares(sort?: string, search?: string) {
     submitToolLogo: s.submitToolLogo,
     userName: s.user?.username,
     userAvatarUrl: s.user?.avatarUrl,
+    userRole: s.user?.role,
     toolName: s.tool?.name,
     toolSlug: s.tool?.slug,
     toolShortDesc: s.tool?.shortDesc,
@@ -148,7 +150,8 @@ async function getLifeShares(sort?: string, search?: string) {
       user: {
         select: {
           username: true,
-          avatarUrl: true
+          avatarUrl: true,
+          role: true
         }
       },
       comments: {
@@ -160,9 +163,9 @@ async function getLifeShares(sort?: string, search?: string) {
         }
       }
     },
-    orderBy: sort === 'hot' || sort === 'mostLiked'
-      ? [{ likes: 'desc' }, { createdAt: 'desc' }]
-      : { createdAt: 'desc' },
+    orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
+      ? { likes: 'desc' }
+      : { createdAt: 'desc' }],
     take: 24
   })
 
@@ -180,6 +183,7 @@ async function getLifeShares(sort?: string, search?: string) {
     userId: s.userId,
     userName: s.user?.username,
     userAvatarUrl: s.user?.avatarUrl,
+    userRole: s.user?.role,
     commentsCount: s.comments?.length || 0
   }))
 }
@@ -463,7 +467,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                         status: share.status,
                         type: share.type,
                         createdAt: share.createdAt,
-                        user: { id: share.userId, username: share.userName, avatarUrl: share.userAvatarUrl },
+                        user: { id: share.userId, username: share.userName, avatarUrl: share.userAvatarUrl, role: share.userRole },
                         tool: toolData,
                         _count: { comments: Number(share.commentsCount || 0) }
                       }} />
@@ -481,7 +485,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                       status: share.status,
                       type: share.type,
                       createdAt: share.createdAt,
-                      user: { id: share.userId, username: share.userName, avatarUrl: share.userAvatarUrl },
+                      user: { id: share.userId, username: share.userName, avatarUrl: share.userAvatarUrl, role: share.userRole },
                       tool: null,
                       _count: { comments: Number(share.commentsCount || 0) }
                     }} />

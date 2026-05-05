@@ -40,6 +40,7 @@ interface UserShareCardProps {
       id: number
       username: string
       avatarUrl: string | null
+      role?: string
     }
     _count: {
       comments: number
@@ -75,6 +76,7 @@ function isAIUser(name: string): boolean {
 
 export default function UserShareCard({ share }: UserShareCardProps) {
   const { tool, user } = share
+  const isAdmin = user.role === 'ADMIN'
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
@@ -596,9 +598,28 @@ export default function UserShareCard({ share }: UserShareCardProps) {
   
   return (
     <div 
-      className="group bg-[#12121a] border border-[#2a2a3a] overflow-hidden transition-all duration-300 hover:border-[#00ff88]/50 hover:shadow-[0_0_20px_#00ff8820]"
+      className={`group relative bg-[#12121a] border overflow-hidden transition-all duration-300 ${
+        isAdmin 
+          ? 'border-[#ffd700] hover:shadow-[0_0_25px_#ffd70040]' 
+          : 'border-[#2a2a3a] hover:border-[#00ff88]/50 hover:shadow-[0_0_20px_#00ff8820]'
+      }`}
       style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
     >
+      {/* 站长置顶标签 */}
+      {isAdmin && (
+        <div className="absolute -top-[1px] -right-[1px] z-10">
+          <div 
+            className="flex items-center gap-1 px-3 py-1 text-[10px] font-bold font-orbitron text-black"
+            style={{ 
+              background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
+              clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 8px))'
+            }}
+          >
+            ⭐ 置顶
+          </div>
+        </div>
+      )}
+      
       {/* 头部 - 分享者信息 */}
       <div className="p-5 pb-4">
         <div className="flex items-center gap-3">
@@ -615,7 +636,19 @@ export default function UserShareCard({ share }: UserShareCardProps) {
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-[#e0e0e0] font-orbitron">{user.username}</span>
+              <span className={`font-bold font-orbitron ${isAdmin ? 'text-[#ffd700]' : 'text-[#e0e0e0]'}`}>{user.username}</span>
+              {isAdmin && (
+                <span 
+                  className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
+                    color: '#000',
+                    clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px))'
+                  }}
+                >
+                  👑 站长
+                </span>
+              )}
               {/* 类型标签 */}
               <span 
                 className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium border ${
@@ -1060,12 +1093,16 @@ export default function UserShareCard({ share }: UserShareCardProps) {
                               作者
                             </span>
                           )}
-                          {item.user.name === 'admin' && !isAIUser(item.user.name) && (
+                          {item.user.name === '管理员' && !isAIUser(item.user.name) && (
                             <span 
-                              className="px-1.5 py-0.5 bg-[#ff3366] text-[#0a0a0f] text-[10px] font-medium"
-                              style={{ clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px))' }}
+                              className="px-1.5 py-0.5 text-[10px] font-bold"
+                              style={{ 
+                                background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
+                                color: '#000',
+                                clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px))'
+                              }}
                             >
-                              管理员
+                              👑 站长
                             </span>
                           )}
                         </div>
