@@ -50,8 +50,8 @@ export async function GET(
     // 获取用户的统计数据
     const statsResult = await prisma.$queryRaw`
       SELECT 
-        (SELECT COUNT(*) FROM shares WHERE userId = ${userId} AND status = 'approved') as shareCount,
-        (SELECT COALESCE(SUM(likes), 0) FROM shares WHERE userId = ${userId} AND status = 'approved') as totalLikes
+        (SELECT COUNT(*) FROM shares WHERE "userId" = ${userId} AND status = 'approved') as "shareCount",
+        (SELECT COALESCE(SUM(likes), 0) FROM shares WHERE "userId" = ${userId} AND status = 'approved') as "totalLikes"
     `
     const stats = Array.isArray(statsResult) ? statsResult[0] : statsResult
 
