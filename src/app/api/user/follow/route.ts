@@ -91,12 +91,12 @@ export async function GET(request: NextRequest) {
         // 粉丝列表（谁关注了我）
         const users = await prisma.$queryRawUnsafe(`
           SELECT 
-            u.id, u.username, u.avatarUrl, u.bio,
-            f.createdAt as followAt
+            u.id, u.username, u."avatarUrl", u.bio,
+            f."createdAt" as "followAt"
           FROM follows f
-          JOIN users u ON f.followerId = u.id
-          WHERE f.followingId = ${parseInt(userId)}
-          ORDER BY f.createdAt DESC
+          JOIN users u ON f."followerId" = u.id
+          WHERE f."followingId" = ${parseInt(userId)}
+          ORDER BY f."createdAt" DESC
           LIMIT ${limit} OFFSET ${skip}
         `)
         
@@ -123,12 +123,12 @@ export async function GET(request: NextRequest) {
         // 关注列表（我关注了谁）
         const users = await prisma.$queryRawUnsafe(`
           SELECT 
-            u.id, u.username, u.avatarUrl, u.bio,
-            f.createdAt as followAt
+            u.id, u.username, u."avatarUrl", u.bio,
+            f."createdAt" as "followAt"
           FROM follows f
-          JOIN users u ON f.followingId = u.id
-          WHERE f.followerId = ${parseInt(userId)}
-          ORDER BY f.createdAt DESC
+          JOIN users u ON f."followingId" = u.id
+          WHERE f."followerId" = ${parseInt(userId)}
+          ORDER BY f."createdAt" DESC
           LIMIT ${limit} OFFSET ${skip}
         `)
 

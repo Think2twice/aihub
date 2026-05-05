@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       FROM tools t
       LEFT JOIN categories c ON t.categoryId = c.id
       WHERE t.submittedBy = ${parseInt(userId)}
-      ORDER BY t.createdAt DESC
+      ORDER BY t."createdAt" DESC
       LIMIT ${limit} OFFSET ${skip}
     `)
 

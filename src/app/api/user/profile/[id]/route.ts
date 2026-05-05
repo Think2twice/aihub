@@ -15,9 +15,9 @@ export async function GET(
     // 获取用户完整信息（包括隐私设置）
     const user = await prisma.$queryRaw`
       SELECT 
-        id, username, avatarUrl, bio, location, website, 
-        role, status, createdAt,
-        profilePublic, showEmail, showLocation, showWebsite, allowComment, showStats
+        id, username, "avatarUrl", bio, location, website, 
+        role, status, "createdAt",
+        "profilePublic", "showEmail", "showLocation", "showWebsite", "allowComment", "showStats"
       FROM users
       WHERE id = ${userId}
       LIMIT 1

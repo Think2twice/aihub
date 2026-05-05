@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
       LEFT JOIN users u ON s.userId = u.id
       LEFT JOIN tools t ON s.toolId = t.id
       LEFT JOIN categories c ON t.categoryId = c.id
-      WHERE s.userId = ${parseInt(userId)}
-      ORDER BY s.createdAt DESC
+      WHERE s."userId" = ${parseInt(userId)}
+      ORDER BY s."createdAt" DESC
       LIMIT ${limit} OFFSET ${skip}
     `)
 

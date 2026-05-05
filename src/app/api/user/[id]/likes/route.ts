@@ -21,14 +21,14 @@ export async function GET(
         s.images,
         s.likes as likeCount,
         s.status,
-        s.createdAt,
-        t.name as toolName,
-        t.slug as toolSlug,
-        (SELECT COUNT(*) FROM comments WHERE shareId = s.id AND status = 'approved') as commentsCount
+        s."createdAt",
+        t.name as "toolName",
+        t.slug as "toolSlug",
+        (SELECT COUNT(*) FROM comments WHERE "shareId" = s.id AND status = 'approved') as "commentsCount"
       FROM shares s
-      LEFT JOIN tools t ON s.toolId = t.id
-      WHERE s.userId = ${userId} AND s.status = 'approved' AND s.likes > 0
-      ORDER BY s.likes DESC, s.createdAt DESC
+      LEFT JOIN tools t ON s."toolId" = t.id
+      WHERE s."userId" = ${userId} AND s.status = 'approved' AND s.likes > 0
+      ORDER BY s.likes DESC, s."createdAt" DESC
       LIMIT ${limit} OFFSET ${skip}
     `)
 
