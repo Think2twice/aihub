@@ -325,7 +325,11 @@ export default async function HomePage() {
                           boxShadow: '0 0 10px rgba(0, 255, 136, 0.3)'
                         }}
                       >
-                      {(share.tool?.name || share.submitToolName || share.user?.username || 'U').trim().charAt(0).toUpperCase()}
+                        {share.tool?.name 
+                          ? share.tool.name.trim().charAt(0).toUpperCase() 
+                          : share.submitToolName 
+                            ? share.submitToolName.trim().charAt(0).toUpperCase() 
+                            : '💬'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-orbitron font-bold text-cyber-foreground truncate group-hover:text-neon-green transition-colors">
