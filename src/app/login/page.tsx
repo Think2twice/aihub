@@ -46,7 +46,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email: formData.email }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || '发送失败')
+      if (!res.ok) throw new Error(data.message || data.error || '发送失败')
       setCodeSent(true); setCodeSuccess(data.message || '验证码已发送，请查收邮件'); setCountdown(60)
     } catch (err: any) { setError(err.message) }
     finally { setSendingCode(false) }

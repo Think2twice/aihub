@@ -85,17 +85,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 防线3：已注册邮箱拒绝发送（不泄露邮箱是否已注册，统一提示）
+    // 防线3：检查邮箱是否已注册
     const existingUser = await (prisma as any).user.findUnique({
       where: { email: email.toLowerCase() }
     })
     if (existingUser) {
       await logVerification({
         email, ipAddress: clientIp, userAgent,
-        success: false, reason: '邮箱已注册，静默忽略'
+        success: false, reason: '邮箱已注册，拒绝发送'
       })
-      // 安全提示：不告诉用户"邮箱已注册"，统一返回成功（防止枚举探测）
-      return NextResponse.json({ message: '如果该邮箱未注册，验证码已发送' })
+      return NextResponse.json({ message: '该邮箱已注册，请直接登录' }, { status: 400 })
     }
 
     const code = generateCode()
