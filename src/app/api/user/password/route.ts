@@ -51,7 +51,7 @@ export async function PUT(request: NextRequest) {
     await prisma.$executeRaw`
       UPDATE users 
       SET password = ${hashedPassword},
-          updatedAt = NOW()
+          "updatedAt" = NOW()
       WHERE id = ${parseInt(userId)}
     `
 
