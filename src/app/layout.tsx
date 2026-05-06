@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import BackToTop from '@/components/BackToTop'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'AI Hub - 全球AI工具聚合平台 | 发现800+实用AI工具',
@@ -50,8 +51,11 @@ export default function RootLayout({
         <BackToTop />
 
         {/* 百度统计 */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        <Script
+          id="baidu-analytics"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
 var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement("script");
@@ -60,7 +64,8 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 `
-        }} />
+          }}
+        />
       </body>
     </html>
   )
