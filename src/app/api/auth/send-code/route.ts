@@ -127,6 +127,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '如果该邮箱未注册，验证码已发送' })
   } catch (error: any) {
     console.error('[SendCode] 错误:', error)
-    return NextResponse.json({ error: '发送失败，请稍后重试' }, { status: 500 })
+    return NextResponse.json({ error: `系统错误: ${error?.message || '未知错误'}` }, { status: 500 })
   }
 }
