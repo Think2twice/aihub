@@ -278,7 +278,7 @@ export default async function AboutPage() {
                 GitHub
               </a>
               <a
-                href="tencent://message/?uin=508002830&Site=&Menu=yes"
+                href="mailto:508002830@qq.com"
                 className="inline-flex items-center gap-2 px-6 py-2.5 border border-cyber-border clip-chamfer text-cyber-muted-foreground font-orbitron text-sm uppercase tracking-wider hover:border-neon-green hover:text-neon-green transition-colors"
               >
                 <Cpu className="w-4 h-4" />
