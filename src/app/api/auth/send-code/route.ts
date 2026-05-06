@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         success: false, reason: `邮件发送失败: ${result.error}`
       })
       console.error('[SendCode] 邮件发送失败:', result.error)
-      return NextResponse.json({ error: '发送失败，请稍后重试' }, { status: 500 })
+      return NextResponse.json({ error: `发送失败: ${result.error}` }, { status: 500 })
     }
 
     // 记录成功日志
