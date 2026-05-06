@@ -334,7 +334,7 @@ export default function Navbar() {
                     <span className="status-dot status-dot-online" />
                   </Link>
                   {/* 下拉菜单 */}
-                  <div style={{position:'absolute', left:'0', top:'100%', marginTop:'4px', background:'#12121a', border:'1px solid #2a2a3a', transition:'all 0.2s', zIndex:'999', whiteSpace:'nowrap', width:'auto', minWidth:'100%'}}
+                  <div style={{position:'absolute', left:'0', top:'100%', marginTop:'4px', background:'#12121a', border:'1px solid #2a2a3a', transition:'all 0.2s', zIndex:'999', width:'100%', whiteSpace:'nowrap'}}
                     className="opacity-0 invisible group-hover:opacity-100 group-hover:visible"
                   >
                     <Link href="/user-center" style={{display:'block', padding:'8px 16px', fontSize:'12px', color:'#e0e0e0', fontFamily:'monospace', textDecoration:'none'}} onMouseOver={e => e.currentTarget.style.background='#1c1c2e'} onMouseOut={e => e.currentTarget.style.background='transparent'}>👤 用户中心</Link>
