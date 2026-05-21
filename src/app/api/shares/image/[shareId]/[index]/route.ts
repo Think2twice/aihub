@@ -2,9 +2,9 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getImageCacheKey, getCachedImage, setCachedImage } from '@/lib/image-cache'
 
-// 用 Blob 包裹 Buffer，绕过 Vercel 严格的 BodyInit 类型检查
+// 将 Buffer 转为标准 Uint8Array，Vercel 新版 TS 对 Node Buffer 类型检查太严
 function imageResponse(buffer: Buffer, mimeType: string, isHit: boolean): Response {
-  return new Response(new Blob([buffer]), {
+  return new Response(new Blob([Uint8Array.from(buffer)]), {
     status: 200,
     headers: {
       'Content-Type': mimeType,
