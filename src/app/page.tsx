@@ -7,6 +7,19 @@ import ToolCard from '@/components/ToolCard'
 
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata() {
+  const totalTools = await prisma.tool.count({ where: { isActive: true } })
+  const totalOpensource = await prisma.tool.count({ where: { isActive: true, isOpenSource: true } })
+  return {
+    title: `AI Hub - 全球AI工具聚合平台 | 发现${totalTools}+实用AI工具`,
+    description: `AI Hub收录${totalTools}+个AI工具（含${totalOpensource}+开源），涵盖聊天对话、图像生成、视频生成、代码助手等16个分类。每日更新最新AI资讯和开源项目，一站式发现全球AI工具。`,
+    openGraph: {
+      title: `AI Hub - 全球AI工具聚合平台 | ${totalTools}+AI工具`,
+      description: `收录${totalTools}+个AI工具，每日更新最新AI资讯`,
+    },
+  }
+}
+
 // Glitch Heading Component
 function GlitchHeading({ text, className = '' }: { text: string; className?: string }) {
   return (
