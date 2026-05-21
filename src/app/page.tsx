@@ -427,7 +427,7 @@ export default async function HomePage() {
                 className="card-cyber p-6"
               >
                 <div className="text-sm text-cyber-muted-foreground mb-2 font-mono">
-                  {news.sourceName} · {(news.publishedAt || news.createdAt).toLocaleDateString('zh-CN')}
+                  {news.sourceName} · {new Date(news.publishedAt || news.createdAt).toLocaleDateString('zh-CN')}
                 </div>
                 <h3 className="font-orbitron font-bold text-cyber-foreground mb-1 line-clamp-2 group-hover:text-neon-green transition-colors">
                   {news.title}
