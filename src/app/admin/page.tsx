@@ -673,7 +673,7 @@ export default function AdminPage() {
                       : 'border-gray-200 hover:border-gray-400'
                   }`}
                 >
-                  <div className="flex items-center gap-2 text-gray-700 mb-1">
+                  <div className="flex items-center gap-2 text-gray-800 mb-1">
                     <stat.icon className="w-4 h-4" />
                     <span className="text-xs">{stat.label}</span>
                   </div>
@@ -696,7 +696,7 @@ export default function AdminPage() {
               </div>
               {/* 来源筛选 */}
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">来源:</span>
+                <span className="text-sm text-gray-800">来源:</span>
                 <select
                   value={sourceFilter}
                   onChange={e => { setSourceFilter(e.target.value as SourceFilter); setToolPage(1) }}
@@ -1231,7 +1231,7 @@ export default function AdminPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-700">{stat.label}</p>
+                      <p className="text-sm text-gray-800">{stat.label}</p>
                       <p className={`text-2xl font-bold text-${stat.color}-600`}>{stat.value}</p>
                     </div>
                     <stat.icon className={`w-8 h-8 text-${stat.color}-200`} />
@@ -1261,7 +1261,7 @@ export default function AdminPage() {
                 </div>
                 {/* 类型筛选 */}
                 <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
-                  <span className="text-sm text-gray-700">类型:</span>
+                  <span className="text-sm text-gray-800">类型:</span>
                   {(['all', 'tool', 'life'] as const).map((t) => (
                     <button
                       key={t}
@@ -1658,7 +1658,7 @@ export default function AdminPage() {
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <stat.icon className={`w-5 h-5 text-${stat.color}-500`} />
-                    <span className="text-gray-700 text-sm">{stat.label}</span>
+                    <span className="text-gray-800 text-sm">{stat.label}</span>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
                 </button>
@@ -1802,23 +1802,23 @@ export default function AdminPage() {
             {/* 统计卡片 */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-700 mb-1">24h 总请求</div>
+                <div className="text-xs text-gray-800 mb-1">24h 总请求</div>
                 <div className="text-2xl font-bold text-gray-900">{verifyStats.totalRequests}</div>
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-700 mb-1">24h 发送成功</div>
+                <div className="text-xs text-gray-800 mb-1">24h 发送成功</div>
                 <div className="text-2xl font-bold text-green-600">{verifyStats.successCount}</div>
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-700 mb-1">24h 被拦截</div>
+                <div className="text-xs text-gray-800 mb-1">24h 被拦截</div>
                 <div className="text-2xl font-bold text-red-500">{verifyStats.failCount}</div>
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-700 mb-1">24h 独立邮箱</div>
+                <div className="text-xs text-gray-800 mb-1">24h 独立邮箱</div>
                 <div className="text-2xl font-bold text-blue-600">{verifyStats.uniqueEmails}</div>
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-700 mb-1">24h 独立IP</div>
+                <div className="text-xs text-gray-800 mb-1">24h 独立IP</div>
                 <div className="text-2xl font-bold text-purple-600">{verifyStats.uniqueIps}</div>
               </div>
             </div>
