@@ -552,7 +552,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'tools' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Wrench className="w-5 h-5" />
@@ -568,7 +568,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'comments' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <MessageSquare className="w-5 h-5" />
@@ -579,7 +579,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'shares' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Share2 className="w-5 h-5" />
@@ -595,7 +595,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'reports' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Flag className="w-5 h-5" />
@@ -608,7 +608,7 @@ export default function AdminPage() {
           </button>
           <Link
             href="/admin/users"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors bg-white text-gray-600 hover:bg-gray-50"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500"
           >
             <Users className="w-5 h-5" />
             用户管理
@@ -618,7 +618,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'verifyLogs' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Mail className="w-5 h-5" />
@@ -629,7 +629,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'announcements' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Megaphone className="w-5 h-5" />
@@ -640,7 +640,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
               activeTab === 'friendLinks' 
                 ? 'bg-primary-600 text-white' 
-                : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                : 'bg-white text-gray-600 border border-gray-400 shadow-sm hover:bg-gray-50 hover:border-gray-500'
             }`}
           >
             <Link2 className="w-5 h-5" />
@@ -670,7 +670,7 @@ export default function AdminPage() {
                     (statusFilter === 'rejected' && stat.label === '已拒绝') ||
                     (statusFilter === 'suspended' && stat.label === '已下架')
                       ? `border-${stat.color}-500 ring-1 ring-${stat.color}-500`
-                      : 'border-gray-200 hover:border-gray-400'
+                      : 'border-gray-300 hover:border-gray-400 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center gap-2 text-gray-800 mb-1">
@@ -1226,7 +1226,7 @@ export default function AdminPage() {
                     (shareTypeFilter === 'tool' && stat.label === '工具圈') ||
                     (shareTypeFilter === 'life' && stat.label === '生活圈')
                       ? `border-${stat.color}-500 ring-1 ring-${stat.color}-500`
-                      : 'border-gray-200 hover:border-gray-400'
+                      : 'border-gray-300 hover:border-gray-400 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -1653,7 +1653,7 @@ export default function AdminPage() {
                     (stat.label === '已驳回' && reportStatusFilter === 'dismissed') ||
                     (stat.label === '全部' && reportStatusFilter === 'all')
                       ? 'border-primary-500 ring-2 ring-primary-200'
-                      : 'border-gray-200 hover:border-gray-400'
+                      : 'border-gray-300 hover:border-gray-400 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
@@ -1801,23 +1801,23 @@ export default function AdminPage() {
           <>
             {/* 统计卡片 */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-300">
                 <div className="text-xs text-gray-800 mb-1">24h 总请求</div>
                 <div className="text-2xl font-bold text-gray-900">{verifyStats.totalRequests}</div>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-300">
                 <div className="text-xs text-gray-800 mb-1">24h 发送成功</div>
                 <div className="text-2xl font-bold text-green-600">{verifyStats.successCount}</div>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-300">
                 <div className="text-xs text-gray-800 mb-1">24h 被拦截</div>
                 <div className="text-2xl font-bold text-red-500">{verifyStats.failCount}</div>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-300">
                 <div className="text-xs text-gray-800 mb-1">24h 独立邮箱</div>
                 <div className="text-2xl font-bold text-blue-600">{verifyStats.uniqueEmails}</div>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-300">
                 <div className="text-xs text-gray-800 mb-1">24h 独立IP</div>
                 <div className="text-2xl font-bold text-purple-600">{verifyStats.uniqueIps}</div>
               </div>
