@@ -232,31 +232,29 @@ async function getStats() {
 
 // 获取热门话题标签
 async function getPopularTags() {
+  // 先用原始 SQL 取回 tags 列，再在 JS 里拆解，避免 unnest 在 Prisma 中的兼容问题
   try {
-    const tags = await prisma.$queryRaw<Array<{ tag: string; count: bigint }>>`
-      SELECT 
-        TRIM(unnest(string_to_array(s.tags, ','))) as tag,
-        COUNT(*) as count
-      FROM shares s
-      WHERE s.tags IS NOT NULL AND s.tags != '' AND s.status = 'approved'
-      GROUP BY tag
-      ORDER BY count DESC
-      LIMIT 10
+    const rows = await prisma.$queryRaw<Array<{ tags: string | null }>>`
+      SELECT tags FROM shares
+      WHERE tags IS NOT NULL AND tags != '' AND status = 'approved'
     `
-    return tags.map(t => ({ name: t.tag, count: Number(t.count) }))
+    // 在 JS 里拆解 tags、统计词频
+    const freq = new Map<string, number>()
+    for (const row of rows) {
+      if (!row.tags) continue
+      row.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(tag => {
+        freq.set(tag, (freq.get(tag) || 0) + 1)
+      })
+    }
+    const sorted = [...freq.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([name, count]) => ({ name, count }))
+    // 如果数据库有标签就返回真实数据，没有就返回空数组
+    return sorted
   } catch (error) {
     console.error('获取热门标签失败:', error)
-    // 返回默认话题作为降级方案
-    return [
-      { name: 'AI工具推荐', count: 0 },
-      { name: '使用心得', count: 0 },
-      { name: '效率提升', count: 0 },
-      { name: 'ChatGPT', count: 0 },
-      { name: 'Midjourney', count: 0 },
-      { name: 'Claude', count: 0 },
-      { name: '编程助手', count: 0 },
-      { name: '设计工具', count: 0 },
-    ]
+    return []
   }
 }
 
@@ -581,15 +579,19 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 热门话题
               </h3>
               <div className="flex flex-wrap gap-2">
-                {popularTags.map((tag) => (
-                  <Link
-                    key={tag.name}
-                    href={`/user-share?tab=${tab}&search=${encodeURIComponent(tag.name)}`}
-                    className="px-3 py-1.5 border border-cyber-border text-sm text-cyber-muted-foreground hover:border-neon-green hover:text-neon-green clip-chamfer-sm transition-colors font-mono"
-                  >
-                    #{tag.name}
-                  </Link>
-                ))}
+                {popularTags.length > 0 ? (
+                  popularTags.map((tag) => (
+                    <Link
+                      key={tag.name}
+                      href={`/user-share?tab=${tab}&search=${encodeURIComponent(tag.name)}`}
+                      className="px-3 py-1.5 border border-cyber-border text-sm text-cyber-muted-foreground hover:border-neon-green hover:text-neon-green clip-chamfer-sm transition-colors font-mono"
+                    >
+                      #{tag.name}
+                    </Link>
+                  ))
+                ) : (
+                  <span className="text-xs text-[#4b5563] font-mono">暂无热门话题，发布动态时添加标签即可出现</span>
+                )}
               </div>
             </div>
 
