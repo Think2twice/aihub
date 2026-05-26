@@ -5,10 +5,10 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'src/app/**'
-      - 'prisma/schema.prisma'
-      - 'prisma/seed.ts'
-      - 'src/scripts/**'
+      - 'src/**'
+      - 'prisma/**'
+      - '.github/workflows/**'
+      - '.vercelignore'
   # 手动触发
   workflow_dispatch:
 
@@ -27,6 +27,16 @@ jobs:
       - name: 安装依赖（含 dev）
         run: npm install --prefer-offline
         working-directory: .
+
+      - name: 网络连通性检查
+        run: |
+          echo "=== DNS ==="
+          nslookup ai999999.top
+          echo "=== Sitemap ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" https://ai999999.top/sitemap.xml
+          echo "=== IndexNow API ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" https://api.indexnow.org
+        shell: bash
 
       - name: 流式推送 IndexNow（限前 200 条）
         run: npm run indexnow -- --limit 200

@@ -24,6 +24,8 @@ const BATCH_SIZE = 50
 const BATCH_DELAY = 100
 // 失败重试次数
 const MAX_RETRIES = 3
+// fetch 超时（毫秒）
+const FETCH_TIMEOUT = 15000
 
 interface IndexNowPayload {
   host: string
@@ -40,12 +42,27 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
+ * fetch 带超时
+ */
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = FETCH_TIMEOUT): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal })
+    return res
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+/**
  * 从 sitemap.xml 中解析所有 URL
  */
 async function fetchSitemapUrls(): Promise<string[]> {
   console.log(`📡 读取 sitemap: ${SITEMAP_URL}`)
 
-  const res = await fetch(SITEMAP_URL)
+  const res = await fetchWithTimeout(SITEMAP_URL)
   if (!res.ok) {
     throw new Error(`获取 sitemap 失败: ${res.status} ${res.statusText}`)
   }
@@ -76,7 +93,7 @@ async function submitBatch(urls: string[], retryCount = 0): Promise<boolean> {
   }
 
   try {
-    const res = await fetch(INDEXNOW_API, {
+    const res = await fetchWithTimeout(INDEXNOW_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
