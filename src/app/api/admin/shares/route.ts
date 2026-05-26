@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     params.push(skip)
     const offsetIdx = paramIdx++
 
-    // 并行查询：列表 + 总数 + 统计
+    // 并行 2 次 SQL：列表(含总数窗口) + 统计
     const listSQL = `
       SELECT 
         s.id, s.type, s.content, s.images, s.video, s.likes, s.status, 
@@ -67,7 +67,8 @@ export async function GET(request: NextRequest) {
         s."submitToolCategory", s."submitToolPricing", s."submitToolGithub", s."submitToolLogo",
         u.username as "userUsername", u."avatarUrl" as "userAvatarUrl",
         t.name as "toolName", t.slug as "toolSlug",
-        (SELECT COUNT(*) FROM share_comments sc WHERE sc."shareId" = s.id) as "commentsCount"
+        (SELECT COUNT(*) FROM share_comments sc WHERE sc."shareId" = s.id) as "commentsCount",
+        COUNT(*) OVER() as "totalCount"
       FROM shares s
       LEFT JOIN users u ON s."userId" = u.id
       LEFT JOIN tools t ON s."toolId" = t.id
@@ -76,19 +77,24 @@ export async function GET(request: NextRequest) {
       LIMIT $${limitIdx} OFFSET $${offsetIdx}
     `
 
-    const countSQL = `SELECT COUNT(*) as count FROM shares s ${whereClause}`
+    const statsSQL = `
+      SELECT metric, value, count FROM (
+        SELECT 'status' as metric, status as value, COUNT(*) as count FROM shares GROUP BY status
+        UNION ALL
+        SELECT 'type' as metric, type as value, COUNT(*) as count FROM shares GROUP BY type
+      ) _ GROUP BY metric, value
+    `
 
-    const [shares, totalResult, statusResult, typeResult] = await Promise.all([
+    const [shares, statsResult] = await Promise.all([
       prisma.$queryRawUnsafe(listSQL, ...params),
-      prisma.$queryRawUnsafe(countSQL, ...params),
-      prisma.$queryRawUnsafe(`SELECT status, COUNT(*) as count FROM shares GROUP BY status`),
-      prisma.$queryRawUnsafe(`SELECT type, COUNT(*) as count FROM shares GROUP BY type`)
+      prisma.$queryRawUnsafe(statsSQL),
     ])
 
-    const total = Number((totalResult as any[])[0]?.count || 0)
+    const sharesArray = shares as any[]
+    const total = sharesArray.length > 0 ? Number(sharesArray[0]?.totalCount || 0) : 0
 
     // 转换数据格式，把 base64 图片替换为 proxy URL
-    const formattedShares = (shares as any[]).map(share => {
+    const formattedShares = (sharesArray).map(share => {
       let images: string[] = []
       try {
         const raw = typeof share.images === 'string' ? JSON.parse(share.images) : share.images
@@ -137,12 +143,13 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const pending = Number((statusResult as any[]).find((r: any) => r.status === 'pending')?.count || 0)
-    const approved = Number((statusResult as any[]).find((r: any) => r.status === 'approved')?.count || 0)
-    const rejected = Number((statusResult as any[]).find((r: any) => r.status === 'rejected')?.count || 0)
-    const suspended = Number((statusResult as any[]).find((r: any) => r.status === 'suspended')?.count || 0)
-    const toolCount = Number((typeResult as any[]).find((r: any) => r.type === 'tool')?.count || 0)
-    const lifeCount = Number((typeResult as any[]).find((r: any) => r.type === 'life')?.count || 0)
+    const statsRows = statsResult as Array<{ metric: string; value: string; count: bigint }>
+    const pending = Number(statsRows.find(r => r.metric === 'status' && r.value === 'pending')?.count || 0)
+    const approved = Number(statsRows.find(r => r.metric === 'status' && r.value === 'approved')?.count || 0)
+    const rejected = Number(statsRows.find(r => r.metric === 'status' && r.value === 'rejected')?.count || 0)
+    const suspended = Number(statsRows.find(r => r.metric === 'status' && r.value === 'suspended')?.count || 0)
+    const toolCount = Number(statsRows.find(r => r.metric === 'type' && r.value === 'tool')?.count || 0)
+    const lifeCount = Number(statsRows.find(r => r.metric === 'type' && r.value === 'life')?.count || 0)
 
     return NextResponse.json({
       shares: formattedShares,
