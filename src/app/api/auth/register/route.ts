@@ -7,13 +7,15 @@ import { verifyCode } from '@/lib/email'
 // 写入验证码日志
 async function logVerification(params: {
   email: string
+  ipAddress?: string | null
+  userAgent?: string | null
   success: boolean
   reason?: string
 }) {
   try {
     await prisma.$executeRawUnsafe(
       `INSERT INTO verification_logs (email, "ipAddress", "userAgent", "sentAt", success, reason) VALUES ($1, $2, $3, NOW(), $4, $5)`,
-      params.email, null, null, params.success, params.reason || null
+      params.email, params.ipAddress || null, params.userAgent || null, params.success, params.reason || null
     )
   } catch (err) {
     // 日志写入失败不影响主流程
@@ -24,6 +26,8 @@ export async function POST(request: NextRequest) {
   try {
     const { username, email: rawEmail, password, code } = await request.json()
     const email = rawEmail?.toLowerCase()
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null
+    const userAgent = request.headers.get('user-agent') || null
 
     if (!username || !email || !password) {
       return NextResponse.json(
@@ -51,7 +55,7 @@ export async function POST(request: NextRequest) {
     
     const codeValid = await verifyCode(email, code).catch(() => false)
     if (!codeValid) {
-      await logVerification({ email, success: false, reason: '注册失败：验证码错误或已过期' })
+      await logVerification({ email, ipAddress, userAgent, success: false, reason: '验证码错误或已过期' })
       return NextResponse.json({ error: '验证码错误或已过期，请重新获取' }, { status: 400 })
     }
 
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingEmail) {
-      await logVerification({ email, success: false, reason: '注册失败：邮箱已注册' })
+      await logVerification({ email, ipAddress, userAgent, success: false, reason: '注册失败：邮箱已注册' })
       return NextResponse.json(
         { error: '该邮箱已被注册' },
         { status: 409 }
@@ -74,7 +78,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUsername) {
-      await logVerification({ email, success: false, reason: '注册失败：用户名已存在' })
+      await logVerification({ email, ipAddress, userAgent, success: false, reason: '注册失败：用户名已存在' })
       return NextResponse.json(
         { error: '该用户名已被使用' },
         { status: 409 }
@@ -105,7 +109,7 @@ export async function POST(request: NextRequest) {
     // 返回用户信息（不包含密码）
     const { password: _, ...userWithoutPassword } = user
 
-    await logVerification({ email, success: true, reason: '注册成功' })
+    await logVerification({ email, ipAddress, userAgent, success: true, reason: '注册成功' })
 
     const res = NextResponse.json({
       message: '注册成功',
