@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
 
 function useBaseUrl() {
-  const [baseUrl, setBaseUrl] = useState('http://localhost:3000')
+  const [baseUrl, setBaseUrl] = useState('https://ai999999.top')
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setBaseUrl(window.location.origin)

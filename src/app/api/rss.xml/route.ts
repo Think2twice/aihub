@@ -16,7 +16,7 @@ function escapeXml(str: string): string {
 }
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai999999.top'
   const now = new Date().toUTCString()
 
   // 获取最新 AI 资讯

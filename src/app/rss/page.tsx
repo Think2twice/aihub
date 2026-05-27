@@ -71,7 +71,7 @@ function ReaderCard({ name, desc, platform, href, color }: {
 }
 
 export default async function RssPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai999999.top'
   const rssUrl = `${siteUrl}/api/rss.xml`
 
   // 获取最新5条资讯作为预览

@@ -109,7 +109,7 @@ export async function POST(
 
     // 触发 AI 自动互动（异步，不阻塞响应）
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ai999999.top'
       fetch(`${baseUrl}/api/ai/interact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
