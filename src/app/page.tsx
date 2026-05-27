@@ -22,7 +22,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 // ISR: 每5分钟在后台重新生成一次静态页面
 // 访客始终访问 CDN 上的静态 HTML，无需跑 Serverless 函数
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   const [totalTools, totalOpensource] = await Promise.all([
