@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'RSS 订阅 | AI Hub',
-  description: '订阅 AI Hub RSS，第一时间获取 AI 工具与资讯更新',
+  description: '订阅 AI Hub 的 RSS 资讯源，第一时间获取最新AI工具收录、行业资讯更新，涵盖大语言模型、AI绘画、代码助手、视频生成等领域动态。',
 }
 
 function GlitchHeading({ text, className = '' }: { text: string; className?: string }) {

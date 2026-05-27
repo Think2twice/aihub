@@ -9,7 +9,7 @@ SITEMAP_URL="https://ai999999.top/sitemap.xml"
 PRIMARY_API="https://api.indexnow.org/indexnow"
 FALLBACK_API="https://www.bing.com/indexnow"
 
-BATCH_SIZE=50
+BATCH_SIZE=5
 MAX_RETRIES=3
 REQUEST_TIMEOUT=30
 

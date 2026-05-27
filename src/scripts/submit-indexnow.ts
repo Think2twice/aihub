@@ -4,7 +4,7 @@
  * 功能：
  * 1. 读取站点 sitemap.xml
  * 2. 解析所有 URL
- * 3. 分批流式推送至 IndexNow API（每批 50 条，间隔 100ms）
+ * 3. 分批流式推送至 IndexNow API（每批 5 条，间隔 1000ms，Bing 推荐流式模式）
  * 
  * 用法：
  *   npm run indexnow                  # 推送 sitemap 中所有 URL
@@ -18,10 +18,10 @@ const SITEMAP_URL = 'https://ai999999.top/sitemap.xml'
 const API_KEY = '25dae7e87ad508621408a0351647d05d19fa4c606d8266bfffa947146a16c4ac'
 const KEY_LOCATION = `https://${SITE_HOST}/${API_KEY}.txt`
 
-// 每批提交数量（CI 环境下用 50 批大幅缩短总耗时）
-const BATCH_SIZE = 50
-// 批次间隔（毫秒，缩短到 100ms 减少总时长）
-const BATCH_DELAY = 100
+// 每批提交数量（Bing 推荐流式模式，每批不超过 5 条）
+const BATCH_SIZE = 5
+// 批次间隔（毫秒，Bing 建议流式推送降低服务器压力）
+const BATCH_DELAY = 1000
 // 失败重试次数
 const MAX_RETRIES = 3
 // fetch 超时（毫秒）

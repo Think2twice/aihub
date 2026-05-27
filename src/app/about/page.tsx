@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: '关于我们 | AI Hub',
-  description: '了解 AI Hub 的使命、团队与发展历程',
+  description: 'AI Hub 致力于打造最全面的AI工具导航平台，收录800+优质AI工具，覆盖聊天对话、图像生成、代码助手等16大分类，帮助开发者和创作者发现并高效使用人工智能工具。',
 }
 
 function GlitchHeading({ text, className = '' }: { text: string; className?: string }) {
