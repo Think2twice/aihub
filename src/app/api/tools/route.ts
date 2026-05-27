@@ -14,7 +14,6 @@ export async function GET(request: NextRequest) {
   const where: any = { 
     status: 'approved',
     isActive: true,
-    source: 'crawler'  // 只显示爬虫抓取的官方工具
   }
   
   if (category) where.category = { slug: category }
