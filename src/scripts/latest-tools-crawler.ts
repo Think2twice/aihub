@@ -202,13 +202,15 @@ async function saveTools(tools: any[]) {
           if (otherCategory) categoryId = otherCategory.id
         }
       }
+      const desc = cleanText(tool.description)
       
       await prisma.tool.create({
         data: {
           name: cleanText(tool.name),
           slug,
-          description: cleanText(tool.description),
-          shortDesc: cleanText(tool.description).slice(0, 100),
+          // 如果 description 比 shortDesc 长很多才存，否则只存 shortDesc 避免重复
+          ...(desc.length > 110 ? { description: desc } : {}),
+          shortDesc: desc.slice(0, 100),
           websiteUrl: tool.websiteUrl || '',
           githubUrl: tool.githubUrl || '',
           stars: tool.stars || 0, upvotes: 0,
