@@ -362,6 +362,18 @@ async function main() {
     }
   }
 
+  // 补全有 GitHub 链接但 stars=0 的 star 数
+  console.log('\n⭐ 检查并补全 GitHub star 数...')
+  try {
+    execSync('npx tsx scripts/backfill-stars.ts', {
+      cwd: process.cwd(),
+      encoding: 'utf-8',
+      timeout: 120000,
+    })
+  } catch (err) {
+    console.error('⚠️ 补 star 过程出错:', err instanceof Error ? err.message : err)
+  }
+
   await prisma.$disconnect()
 }
 
