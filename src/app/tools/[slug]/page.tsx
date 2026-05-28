@@ -244,14 +244,16 @@ export default async function ToolPage({ params }: ToolPageProps) {
               </div>
             </div>
 
-            {/* Description */}
-            <div className="bg-cyber-card border border-cyber-border p-8 mt-6 relative"
-              style={{ clipPath: 'polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px))' }}>
-              <h2 className="text-xl font-bold text-cyber-foreground mb-4 font-orbitron flex items-center gap-2">
-                <span className="text-neon-cyan">{'>'}</span> 工具介绍
-              </h2>
-              <p className="text-cyber-muted-foreground leading-relaxed font-mono">{tool.description}</p>
-            </div>
+            {/* Description（仅当与 shortDesc 不同时展示，避免重复） */}
+            {tool.description && tool.description !== tool.shortDesc && (
+              <div className="bg-cyber-card border border-cyber-border p-8 mt-6 relative"
+                style={{ clipPath: 'polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px))' }}>
+                <h2 className="text-xl font-bold text-cyber-foreground mb-4 font-orbitron flex items-center gap-2">
+                  <span className="text-neon-cyan">{'>'}</span> 工具介绍
+                </h2>
+                <p className="text-cyber-muted-foreground leading-relaxed font-mono">{tool.description}</p>
+              </div>
+            )}
 
             {/* Tags */}
             {parseTags(tool.tags).length > 0 && (
