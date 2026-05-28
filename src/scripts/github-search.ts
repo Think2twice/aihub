@@ -48,6 +48,20 @@ const QUERIES = [
   'stable-diffusion OR text-to-image OR text-to-video created:>',
   'copilot OR code-assist OR rag OR embedding created:>',
 ]
+
+// 热门项目查询（无时间限制，按 stars 排序，找高星项目）
+const HOT_QUERIES = [
+  'topic:ai sort:stars-desc',
+  'topic:machine-learning sort:stars-desc',
+  'topic:deep-learning sort:stars-desc',
+  'topic:llm sort:stars-desc',
+  'topic:computer-vision sort:stars-desc',
+  'topic:nlp sort:stars-desc',
+  'topic:data-science sort:stars-desc',
+  'topic:chatbot sort:stars-desc',
+  'topic:neural-network sort:stars-desc',
+]
+const HOT_PER_PAGE = 30  // 热门搜索每批少取一些，避免重复
 const DAYS = 90
 const PER_PAGE = 100
 
@@ -117,7 +131,65 @@ async function searchGitHubTools(): Promise<GitHubTool[]> {
   return allTools
 }
 
-export { searchGitHubTools, type GitHubTool }
+/**
+ * 搜索热门 AI 项目（无时间限制，按 stars 排序）
+ * 用于补全网站缺失的热门工具
+ */
+async function searchPopularGitHubTools(): Promise<GitHubTool[]> {
+  const allTools: GitHubTool[] = []
+  const seen = new Set<string>()
 
-// Standalone run
-searchGitHubTools().then(t => console.log(`__GITHUB_RESULTS__=${JSON.stringify(t)}=__END__`)).catch(console.error)
+  const GQL_HOT = "query($searchQuery:String!){search(query:$searchQuery,type:REPOSITORY,first:" + HOT_PER_PAGE + "){nodes{...on Repository{name description url homepageUrl createdAt stargazerCount repositoryTopics(first:5){nodes{topic{name}}}owner{login}}}}}"
+
+  for (let i = 0; i < HOT_QUERIES.length; i++) {
+    const q = HOT_QUERIES[i]
+    console.log(`🔥 热门 ${i+1}/${HOT_QUERIES.length}: "${q}"`)
+    if (i > 0) await new Promise(r => setTimeout(r, 2000))
+
+    try {
+      const result = await githubGraphQL(GQL_HOT, { searchQuery: q })
+      if (result.errors) {
+        console.log(`  Error: ${result.errors[0]?.message}`)
+        continue
+      }
+      const repos = result.data?.search?.nodes || []
+      let newCount = 0
+      for (const repo of repos) {
+        if (!repo.name) continue
+        const slug = `${repo.owner?.login || 'u'}/${repo.name}`
+        if (seen.has(slug)) continue
+        seen.add(slug)
+        const topics = repo.repositoryTopics?.nodes?.map((t: any) => t.topic?.name).filter(Boolean) || []
+        const tags = topics.length > 0 ? topics.slice(0, 3).join(',') : 'AI'
+        allTools.push({
+          name: repo.name,
+          description: repo.description || '',
+          githubUrl: repo.url,
+          websiteUrl: repo.homepageUrl || '',
+          stars: repo.stargazerCount || 0,
+          publishedAt: repo.createdAt,
+          source: `hot-${i}`,
+          sourceUrl: repo.url,
+          tags,
+          isOpenSource: true,
+        })
+        newCount++
+      }
+      console.log(`  ${repos.length} fetched, ${newCount} new`)
+    } catch (e: any) {
+      console.log(`  Error: ${e.message}`)
+    }
+  }
+
+  // 按 stars 降序排列
+  allTools.sort((a, b) => b.stars - a.stars)
+  console.log(`🔥 热门项目总计: ${allTools.length} 个`)
+  return allTools
+}
+
+export { searchGitHubTools, searchPopularGitHubTools, type GitHubTool }
+
+// Standalone run: node github-search.ts [--hot]
+const isHot = process.argv.includes('--hot')
+const fn = isHot ? searchPopularGitHubTools : searchGitHubTools
+fn().then(t => console.log(`__GITHUB_RESULTS__=${JSON.stringify(t)}=__END__`)).catch(console.error)

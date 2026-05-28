@@ -232,43 +232,119 @@ async function saveTools(tools: any[]) {
 }
 
 async function main() {
-  console.log('🚀 开始抓取最新 AI 工具...')
-  console.log(`📅 抓取时间范围: 最近 ${DAYS_LIMIT} 天\n`)
-  
-  // 从 GitHub 获取（用子进程运行独立脚本，避免 prisma 导入干扰 GitHub API）
+  console.log('🚀 === 开始抓取 AI 工具 ===')
+  console.log(`📅 时间: ${new Date().toLocaleString()}\n`)
+
+  // =========================================================
+  // 阶段 1: 查询现有数据库，准备去重
+  // =========================================================
+  console.log('📦 查询现有工具列表...')
+  const existingTools = await prisma.tool.findMany({
+    select: { slug: true, name: true, githubUrl: true, websiteUrl: true },
+  })
+  const existingUrls = new Set<string>()
+  const existingNames = new Set<string>()
+  for (const t of existingTools) {
+    existingNames.add(t.name.toLowerCase())
+    if (t.githubUrl) existingUrls.add(t.githubUrl.replace(/\/$/, '').toLowerCase())
+    if (t.websiteUrl) existingUrls.add(t.websiteUrl.replace(/\/$/, '').toLowerCase())
+  }
+  console.log(`📊 数据库已有 ${existingTools.length} 个工具\n`)
+
+  // =========================================================
+  // 阶段 2: 爬取热门项目（补缺口）
+  // =========================================================
+  console.log('🔥 === 阶段 1: 爬取热门项目（补缺口） ===')
+  let hotTools: any[] = []
+  try {
+    console.log('📦 启动 GitHub 热门搜索子进程...')
+    const result = execSync('npx tsx src/scripts/github-search.ts --hot', {
+      cwd: process.cwd(),
+      encoding: 'utf-8',
+      timeout: 180000,
+      env: { ...process.env },
+    })
+    const jsonMatch = result.match(/__GITHUB_RESULTS__=([\s\S]+?)=__END__/)
+    if (jsonMatch) {
+      hotTools = JSON.parse(jsonMatch[1])
+    }
+  } catch (err) {
+    console.error('❌ 热门搜索子进程失败:', err instanceof Error ? err.message : err)
+  }
+
+  // 过滤掉已存在的
+  const hotNew = hotTools.filter(t => {
+    const name = t.name?.toLowerCase() || ''
+    const ghUrl = t.githubUrl?.replace(/\/$/, '').toLowerCase() || ''
+    const wUrl = t.websiteUrl?.replace(/\/$/, '').toLowerCase() || ''
+    return !existingNames.has(name) && !existingUrls.has(ghUrl) && !existingUrls.has(wUrl)
+  })
+  console.log(`\n🔥 热门项目: 共获取 ${hotTools.length}，新增 ${hotNew.length}\n`)
+
+  let hotSaved = 0, hotSkipped = 0
+  if (hotNew.length > 0) {
+    const result = await saveTools(hotNew)
+    hotSaved = result.saved
+    hotSkipped = result.skipped
+    // 把新增的加入去重集合，避免阶段3重复
+    for (const t of hotNew) {
+      existingNames.add(t.name?.toLowerCase() || '')
+      if (t.githubUrl) existingUrls.add(t.githubUrl.replace(/\/$/, '').toLowerCase())
+      if (t.websiteUrl) existingUrls.add(t.websiteUrl.replace(/\/$/, '').toLowerCase())
+    }
+  }
+
+  // =========================================================
+  // 阶段 3: 爬取近期新项目
+  // =========================================================
+  console.log('📦 === 阶段 2: 爬取近期新项目 ===')
   let githubTools: any[] = []
   try {
-    console.log('📦 启动 GitHub 搜索子进程...')
+    console.log('📦 启动 GitHub 近期搜索子进程...')
     const result = execSync('npx tsx src/scripts/github-search.ts', {
       cwd: process.cwd(),
       encoding: 'utf-8',
-      timeout: 120000,
+      timeout: 180000,
       env: { ...process.env },
     })
-    // 从 stdout 提取 JSON 结果
     const jsonMatch = result.match(/__GITHUB_RESULTS__=([\s\S]+?)=__END__/)
     if (jsonMatch) {
       githubTools = JSON.parse(jsonMatch[1])
     }
   } catch (err) {
-    console.error('❌ GitHub 搜索子进程失败:', err instanceof Error ? err.message : err)
+    console.error('❌ GitHub 近期搜索子进程失败:', err instanceof Error ? err.message : err)
   }
-  
-  // 从 RSS 获取
-  const rssLimit = githubTools.length === 0 ? 20 : 10
+
+  // 过滤掉已存在的
+  const recentNew = githubTools.filter(t => {
+    const name = t.name?.toLowerCase() || ''
+    const ghUrl = t.githubUrl?.replace(/\/$/, '').toLowerCase() || ''
+    const wUrl = t.websiteUrl?.replace(/\/$/, '').toLowerCase() || ''
+    return !existingNames.has(name) && !existingUrls.has(ghUrl) && !existingUrls.has(wUrl)
+  })
+  console.log(`\n📦 近期项目: 共获取 ${githubTools.length}，新增 ${recentNew.length}\n`)
+
+  // =========================================================
+  // 阶段 4: RSS 抓取
+  // =========================================================
+  console.log('📡 === 阶段 3: RSS 抓取 ===')
+  const rssLimit = recentNew.length === 0 ? 20 : 10
   const rssTools = await fetchFromRSS(rssLimit)
-  
-  // 合并去重（GitHub 优先）
-  const allTools = [...githubTools, ...rssTools]
-  const uniqueTools = allTools.filter((tool, index, self) => 
-    index === self.findIndex(t => t.name === tool.name || t.websiteUrl === tool.websiteUrl)
+
+  // 合并近期 + RSS，去重
+  const allNewTools = [...recentNew, ...rssTools]
+  const uniqueTools = allNewTools.filter((tool, index, self) =>
+    index === self.findIndex(t => t.name === tool.name || (t.websiteUrl && tool.websiteUrl && t.websiteUrl === tool.websiteUrl))
   )
-  
-  console.log(`\n📊 共获取 ${uniqueTools.length} 个唯一工具`)
-  
+
+  console.log(`\n📊 共获取 ${uniqueTools.length} 个唯一新工具`)
+
   const { saved, skipped } = await saveTools(uniqueTools)
-  console.log(`\n✨ 完成! 新增: ${saved}, 更新: ${skipped}`)
-  
+  console.log(`\n✨ === 抓取完成 ===`)
+  console.log(`🔥 热门新增: ${hotSaved}/${hotNew.length}`)
+  console.log(`📦 近期新增: ${saved}/${uniqueTools.length}`)
+  console.log(`⏭️  跳过(已存在): ${skipped}`)
+
   await prisma.$disconnect()
 }
 
