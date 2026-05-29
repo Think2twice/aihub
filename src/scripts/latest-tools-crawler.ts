@@ -374,6 +374,19 @@ async function main() {
     console.error('⚠️ 补 star 过程出错:', err instanceof Error ? err.message : err)
   }
 
+  // 通知搜索引擎内容已更新
+  console.log('\n🔔 通知 IndexNow 搜索引擎内容已更新...')
+  try {
+    execSync('bash src/scripts/indexnow.sh 200 2>&1', {
+      cwd: process.cwd(),
+      encoding: 'utf-8',
+      timeout: 60000,
+    })
+    console.log('✅ IndexNow 提交完成')
+  } catch (err) {
+    console.log('⚠️ IndexNow 提交失败（不影响已保存的工具）:', err instanceof Error ? err.message : err)
+  }
+
   await prisma.$disconnect()
 }
 
