@@ -13,6 +13,7 @@ on:
 jobs:
   indexnow-submit:
     runs-on: ubuntu-latest
+    continue-on-error: true  # 无密钥时不阻塞部署
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
