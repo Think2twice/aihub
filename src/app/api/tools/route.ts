@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// CORS 头
-const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' }
+// CORS 头 + 缓存控制（5分钟CDN缓存，降低Supabase带宽消耗）
+const CORS = { 
+  'Access-Control-Allow-Origin': '*', 
+  'Access-Control-Allow-Methods': 'GET, OPTIONS', 
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+}
 
 // OPTIONS 预检
 export async function OPTIONS() {
