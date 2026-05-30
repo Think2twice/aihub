@@ -36,7 +36,7 @@ export async function generateMetadata() {
     description: `AI Hub收录${totalTools}+个AI工具（含${totalOpensource}+开源），涵盖聊天对话、图像生成、视频生成、代码助手等16个分类。每日更新最新AI资讯和开源项目，一站式发现全球AI工具。`,
     openGraph: {
       title: `AI Hub - 全球AI工具聚合平台 | ${totalTools}+AI工具`,
-      description: `收录${totalTools}+个AI工具，每日更新最新AI资讯`,
+      description: `AI Hub收录${totalTools}+个AI工具（含${totalOpensource}+开源），涵盖聊天对话、图像生成、视频生成、代码助手等16个分类，每日更新最新AI资讯和开源项目，一站式发现全球AI工具。`,
     },
   }
 }
