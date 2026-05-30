@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
 
     if (Array.isArray(existing) && existing.length > 0) {
       await prisma.$executeRawUnsafe(`DELETE FROM user_like_tools WHERE id = $1`, existing[0].id)
-      // 同步更新 shares 表的点赞数
+      // 同步更新 tools 表和 shares 表的点赞数
+      await prisma.$executeRawUnsafe(
+        `UPDATE tools SET upvotes = GREATEST(0, upvotes - 1) WHERE id = $1`,
+        toolId
+      )
       let newLikes = 0
       if (shareId) {
         const result = await prisma.$queryRawUnsafe<Array<any>>(
@@ -66,7 +70,11 @@ export async function POST(request: NextRequest) {
     )
     // 记录点赞次数
     await incrementLikeCount(userId)
-    // 同步更新 shares 表的点赞数
+    // 同步更新 tools 表和 shares 表的点赞数
+    await prisma.$executeRawUnsafe(
+      `UPDATE tools SET upvotes = upvotes + 1 WHERE id = $1`,
+      toolId
+    )
     let newLikes = 0
     if (shareId) {
       const result = await prisma.$queryRawUnsafe<Array<any>>(
@@ -93,6 +101,11 @@ export async function DELETE(request: NextRequest) {
     await prisma.$executeRawUnsafe(
       `DELETE FROM user_like_tools WHERE user_id = $1 AND tool_id = $2`,
       userId, toolId
+    )
+    // 同步更新 tools 表的点赞数
+    await prisma.$executeRawUnsafe(
+      `UPDATE tools SET upvotes = GREATEST(0, upvotes - 1) WHERE id = $1`,
+      toolId
     )
     return NextResponse.json({ message: '已删除' })
   } catch (error: any) {
