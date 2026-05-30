@@ -60,7 +60,7 @@ const nextConfig = {
           },
         ]
       },
-      // API 路由单独处理 — CSP 更宽松一些（因为 API 响应不含 HTML）
+      // API 路由 — 通用头（不加 Cache-Control，让具体路由自行控制）
       {
         source: '/api/:path*',
         headers: [
@@ -73,6 +73,12 @@ const nextConfig = {
           },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
+        ]
+      },
+      // 管理后台 API — 不缓存
+      {
+        source: '/api/admin/:path*',
+        headers: [
           { key: 'Cache-Control', value: 'no-store' },
         ]
       }
