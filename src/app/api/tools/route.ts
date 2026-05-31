@@ -14,8 +14,16 @@ export async function OPTIONS() {
   return NextResponse.json(null, { headers: CORS })
 }
 
-// GET /api/tools - 获取工具列表（只返回 approved 的）
+// GET /api/tools - 获取工具列表（已关闭外部访问，仅保留内部使用）
 export async function GET(request: NextRequest) {
+  // 仅允许本站服务器渲染使用，外部请求返回 403
+  const origin = request.headers.get('origin') || ''
+  const host = request.headers.get('host') || ''
+  const allowed = origin.includes('ai999999.top') || host.includes('ai999999.top') || !origin
+  if (!allowed) {
+    return NextResponse.json({ error: 'API 已关闭外部访问' }, { status: 403 })
+  }
+
   const { searchParams } = new URL(request.url)
   const category = searchParams.get('category')
   const search = searchParams.get('search')
