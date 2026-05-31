@@ -1,0 +1,160 @@
+import Link from 'next/link'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import { Clock, Github, MessageSquare, ArrowUpRight, Sparkles, Shield, Zap, Bug, Wrench, Star } from 'lucide-react'
+
+const updates = [
+  {
+    date: '2026-05-31',
+    title: '安全加固 & SEO优化',
+    icon: Shield,
+    color: 'text-neon-green',
+    items: [
+      '🛡️ API 关闭外部访问，防止恶意爬取',
+      '🤖 防爬增强：拦截非浏览器脚本请求',
+      '📈 OG描述扩充，搜索引擎展示更完整',
+      '⚡ API 加 CDN 缓存，降低带宽消耗',
+    ]
+  },
+  {
+    date: '2026-05-30',
+    title: '趋势榜 & Supabase优化',
+    icon: Zap,
+    color: 'text-neon-magenta',
+    items: [
+      '🔥 新建趋势榜页面（热度飙升/最新上榜/高分榜）',
+      '⭐ 工具卡片始终显示 GitHub Star 数',
+      '🔔 crawl:latest 完成后自动通知搜索引擎',
+      '💾 API 加 5 分钟 CDN 缓存，降低数据库带宽',
+    ]
+  },
+  {
+    date: '2026-05-29',
+    title: '分类页优化 & sitemap修复',
+    icon: Wrench,
+    color: 'text-neon-cyan',
+    items: [
+      '🔗 /category/[slug] 自动跳转到 /tools?category=[slug]',
+      '🗺️ sitemap 移除不存在的死链接',
+      '📝 多个页面元描述扩充到 150+ 字符',
+    ]
+  },
+  {
+    date: '2026-05-28',
+    title: 'GitHub Star补全 & 爬虫增强',
+    icon: Star,
+    color: 'text-neon-yellow',
+    items: [
+      '⭐ 补全 12 个工具的 GitHub 真实 Star 数',
+      '🕷️ crawl:latest 两阶段爬取（热门补缺口 + 近期新项目）',
+      '🌐 新增 450+ 工具中文简介翻译',
+      '📦 工具总数突破 1000+',
+    ]
+  },
+  {
+    date: '2026-05-20',
+    title: '社区优化第一阶段 - 通知系统上线',
+    icon: MessageSquare,
+    color: 'text-neon-cyan',
+    items: [
+      '🔔 Navbar 铃铛图标 + 未读红点',
+      '📋 独立通知页 + 用户中心通知 Tab',
+      '✅ 单条/全部标记已读',
+      '📬 评论、点赞、关注、系统四种通知类型',
+    ]
+  },
+]
+
+export const metadata = {
+  title: '更新日志 | AI Hub',
+  description: '查看AI Hub的最新更新动态，了解我们新增的功能、修复的Bug和优化改进。',
+}
+
+export default function ChangelogPage() {
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] text-cyber-foreground">
+      <Navbar />
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyber-muted border border-cyber-border rounded-lg mb-6 font-mono text-sm">
+            <Clock className="w-4 h-4 text-neon-green" />
+            <span className="text-neon-green">更新日志</span>
+          </div>
+          <h1 className="text-4xl font-orbitron font-black mb-4">
+            <span className="text-neon-green">改</span>
+            <span className="text-neon-magenta">进</span>
+            <span className="text-cyber-foreground">日志</span>
+          </h1>
+          <p className="text-cyber-muted-foreground max-w-xl mx-auto">
+            记录 AI Hub 的每一次改进，让您清楚了解我们做了什么、正在做什么
+          </p>
+        </div>
+
+        {/* Timeline */}
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-neon-green via-neon-magenta to-transparent" />
+
+          {updates.map((update, idx) => (
+            <div key={idx} className="relative pl-16 pb-12 last:pb-0">
+              {/* Timeline dot */}
+              <div className={`absolute left-4 w-5 h-5 rounded-full bg-cyber-card border-2 border-cyber-border flex items-center justify-center ${update.color}`}>
+                <div className="w-2 h-2 rounded-full bg-current" />
+              </div>
+
+              {/* Card */}
+              <div className="bg-cyber-card border border-cyber-border rounded-xl p-6 hover:border-neon-green/50 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-lg bg-cyber-muted ${update.color}`}>
+                    <update.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-cyber-foreground">{update.title}</h2>
+                    <p className="text-sm text-cyber-muted-foreground font-mono">{update.date}</p>
+                  </div>
+                </div>
+                <ul className="space-y-2">
+                  {update.items.map((item, i) => (
+                    <li key={i} className="text-sm text-cyber-muted-foreground flex items-start gap-2">
+                      <span className="text-neon-green mt-0.5">▸</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Feedback */}
+        <div className="mt-12 bg-cyber-card border border-cyber-border rounded-xl p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-cyber-muted text-neon-magenta mb-4">
+            <MessageSquare className="w-6 h-6" />
+          </div>
+          <h2 className="text-xl font-orbitron font-bold mb-2">有想法？告诉我们</h2>
+          <p className="text-cyber-muted-foreground text-sm mb-6 max-w-md mx-auto">
+            遇到 Bug、有功能建议、或者单纯想给点反馈？欢迎在 GitHub 提交 Issue
+          </p>
+          <a
+            href="https://github.com/YD4223/aihub/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-neon-green/10 border border-neon-green/50 text-neon-green rounded-lg hover:bg-neon-green/20 transition-all font-mono text-sm"
+          >
+            <Github className="w-4 h-4" />
+            提交反馈
+            <ArrowUpRight className="w-3 h-3" />
+          </a>
+        </div>
+
+        <div className="text-center mt-8">
+          <Link href="/" className="text-sm text-cyber-muted-foreground hover:text-neon-green transition-colors font-mono">
+            ← 返回首页
+          </Link>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}

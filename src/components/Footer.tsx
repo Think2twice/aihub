@@ -89,6 +89,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm font-mono">
               <li><Link href="/about" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">关于我们</Link></li>
               <li><Link href="/submit" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">提交工具</Link></li>
+              <li><Link href="/changelog" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">更新日志</Link></li>
               <li><Link href="/rss" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">RSS订阅</Link></li>
             </ul>
           </div>
