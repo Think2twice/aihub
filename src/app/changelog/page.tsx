@@ -6,6 +6,19 @@ import { Clock, Github, MessageSquare, ArrowUpRight, Sparkles, Shield, Zap, Bug,
 const updates = [
   {
     date: '2026-05-31',
+    title: '移动端适配 & 更新日志上线',
+    icon: Bug,
+    color: 'text-neon-magenta',
+    items: [
+      '📱 修复手机端「官网」按钮文字被截断',
+      '📱 修复开源页面分类标签被挤压问题',
+      '📱 按钮自动换行，不挤占标题空间',
+      '📋 新增更新日志页面（Footer 可访问）',
+      '💬 支持通过 GitHub Issues 提交反馈',
+    ]
+  },
+  {
+    date: '2026-05-31',
     title: '安全加固 & SEO优化',
     icon: Shield,
     color: 'text-neon-green',
