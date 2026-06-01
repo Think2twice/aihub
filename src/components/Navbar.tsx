@@ -389,7 +389,7 @@ export default function Navbar() {
                 >
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-[#ff3366] text-[#fff] text-[10px] font-bold flex items-center justify-center font-mono"
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-red-500 text-white text-[11px] font-bold flex items-center justify-center font-mono shadow-[0_0_8px_rgba(239,68,68,0.6)]"
                       style={{ clipPath: 'polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px))' }}
                     >
                       {unreadCount > 99 ? '99+' : unreadCount}
