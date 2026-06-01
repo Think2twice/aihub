@@ -264,12 +264,22 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
   const search = searchParams.search as string | undefined
   const tab = searchParams.tab as string | undefined || 'tool'
   
-  const [toolShares, lifeShares, stats, popularTags] = await Promise.all([
-    getToolShares(sort, search),
-    getLifeShares(sort, search),
-    getStats(),
-    getPopularTags(),
-  ])
+  let toolShares: any[] = [], lifeShares: any[] = [], stats: any = { toolCount: 0, lifeCount: 0, totalLikes: 0, totalComments: 0 }, popularTags: any[] = []
+  try {
+    const results = await Promise.all([
+      getToolShares(sort, search),
+      getLifeShares(sort, search),
+      getStats(),
+      getPopularTags(),
+    ])
+    toolShares = results[0]
+    lifeShares = results[1]
+    stats = results[2]
+    popularTags = results[3]
+  } catch (error) {
+    console.error('加载分享数据失败（可能是数据库超限）:', error)
+    // 静默失败，页面用空数据渲染
+  }
 
   // 搜索时自动跳转到有结果的圈子
   if (search) {
