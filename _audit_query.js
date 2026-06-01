@@ -1,8 +1,19 @@
 const { Client } = require('pg');
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+
+// Read .env directly
+const envPath = path.join(__dirname, '.env');
+const envContent = fs.readFileSync(envPath, 'utf8');
+const envLines = envContent.split('\n');
+let DATABASE_URL = '';
+for (const line of envLines) {
+  const match = line.match(/^DATABASE_URL="(.+)"$/);
+  if (match) { DATABASE_URL = match[1]; break; }
+}
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
@@ -21,12 +32,14 @@ async function main() {
     const noDescTools = await query(`SELECT COUNT(*) as count FROM tools WHERE COALESCE(description, '') = '' OR LENGTH(COALESCE(description, '')) < 10`);
     const zeroViewTools = await query(`SELECT COUNT(*) as count FROM tools WHERE COALESCE("viewCount", 0) = 0`);
     const lowActiveTools = await query(`SELECT COUNT(*) as count FROM tools WHERE COALESCE("viewCount", 0) < 5`);
+    const highViewTools = await query(`SELECT COUNT(*) as count FROM tools WHERE COALESCE("viewCount", 0) >= 100`);
     
     console.log('TOOL_STATS:', JSON.stringify({
       total: Number(totalTools[0].count),
       noDesc: Number(noDescTools[0].count),
       zeroView: Number(zeroViewTools[0].count),
-      lowActive: Number(lowActiveTools[0].count)
+      lowActive: Number(lowActiveTools[0].count),
+      highView: Number(highViewTools[0].count)
     }));
 
     // 2. News stats
@@ -44,11 +57,13 @@ async function main() {
     const totalUsers = await query(`SELECT COUNT(*) as count FROM users`);
     const adminUsers = await query(`SELECT COUNT(*) as count FROM users WHERE role = 'ADMIN'`);
     const recentUsers = await query(`SELECT COUNT(*) as count FROM users WHERE "createdAt" >= NOW() - INTERVAL '30 days'`);
+    const activeUsers = await query(`SELECT COUNT(*) as count FROM users WHERE "updatedAt" >= NOW() - INTERVAL '30 days'`);
     
     console.log('USER_STATS:', JSON.stringify({
       total: Number(totalUsers[0].count),
       admin: Number(adminUsers[0].count),
-      recent30d: Number(recentUsers[0].count)
+      recent30d: Number(recentUsers[0].count),
+      active30d: Number(activeUsers[0].count)
     }));
 
     // 4. Shares
@@ -95,15 +110,7 @@ async function main() {
     const catDist = await query(`SELECT c.name as category, COUNT(t.id) as tool_count FROM categories c LEFT JOIN tools t ON t."categoryId" = c.id GROUP BY c.id, c.name ORDER BY tool_count DESC`);
     console.log('CAT_DIST:', JSON.stringify(catDist));
 
-    // 10. ToolTrendHistory (if exists)
-    try {
-      const trendCount = await query(`SELECT COUNT(*) as count FROM "ToolTrendHistory"`);
-      console.log('TREND_STATS:', JSON.stringify({ total: Number(trendCount[0].count) }));
-    } catch(e) {
-      console.log('TREND_STATS:', JSON.stringify({ error: e.message }));
-    }
-
-    // 11. Friend links
+    // 10. Friend links
     try {
       const flCount = await query(`SELECT COUNT(*) as count FROM "FriendLink"`);
       console.log('FL_STATS:', JSON.stringify({ total: Number(flCount[0].count) }));
@@ -111,7 +118,7 @@ async function main() {
       console.log('FL_STATS:', JSON.stringify({ error: e.message }));
     }
 
-    // 12. Announcements
+    // 11. Announcements
     try {
       const annCount = await query(`SELECT COUNT(*) as count FROM announcements`);
       console.log('ANN_STATS:', JSON.stringify({ total: Number(annCount[0].count) }));
@@ -119,7 +126,7 @@ async function main() {
       console.log('ANN_STATS:', JSON.stringify({ error: e.message }));
     }
 
-    // 13. Tables list
+    // 12. Tables list
     const tables = await query(`
       SELECT table_name 
       FROM information_schema.tables 
@@ -127,6 +134,35 @@ async function main() {
       ORDER BY table_name
     `);
     console.log('TABLES:', JSON.stringify(tables.map(t => t.table_name)));
+
+    // 13. Views with no description (real ones, description is actually empty)
+    const realNoDesc = await query(`SELECT COUNT(*) as count FROM tools WHERE description IS NULL OR description = ''`);
+    console.log('REAL_NO_DESC:', JSON.stringify({ count: Number(realNoDesc[0].count) }));
+
+    // 14. Tool with views stats - distribution
+    const viewDist = await query(`
+      SELECT 
+        CASE 
+          WHEN COALESCE("viewCount", 0) = 0 THEN '0 views'
+          WHEN COALESCE("viewCount", 0) BETWEEN 1 AND 4 THEN '1-4 views'
+          WHEN COALESCE("viewCount", 0) BETWEEN 5 AND 49 THEN '5-49 views'
+          WHEN COALESCE("viewCount", 0) BETWEEN 50 AND 99 THEN '50-99 views'
+          WHEN COALESCE("viewCount", 0) >= 100 THEN '100+ views'
+        END as bucket,
+        COUNT(*) as count
+      FROM tools 
+      GROUP BY bucket 
+      ORDER BY bucket
+    `);
+    console.log('VIEW_DIST:', JSON.stringify(viewDist));
+
+    // 15. Subscribers
+    try {
+      const subCount = await query(`SELECT COUNT(*) as count FROM subscribers`);
+      console.log('SUB_STATS:', JSON.stringify({ total: Number(subCount[0].count) }));
+    } catch(e) {
+      console.log('SUB_STATS:', JSON.stringify({ error: e.message }));
+    }
 
     console.log('DONE');
   } catch(e) {
