@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canLike, incrementLikeCount } from '@/lib/daily-limit'
+import { createNotification } from '@/lib/notification'
 
 // POST /api/comments/[id]/like - 点赞/取消点赞评论
 export async function POST(
@@ -25,9 +26,9 @@ export async function POST(
       }, { status: 429 })
     }
 
-    // 获取当前评论
+    // 获取当前评论（包含用户信息）
     const comment = await prisma.$queryRaw`
-      SELECT likes FROM share_comments WHERE id = ${commentId}
+      SELECT likes, "userId" FROM share_comments WHERE id = ${commentId}
     `
     
     if (!(comment as any[]).length) {
@@ -44,6 +45,19 @@ export async function POST(
 
     // 增加用户点赞次数
     await incrementLikeCount(userId)
+
+    // 通知评论作者有人点赞（异步）
+    const commentOwnerId = (comment as any[])[0]?.userId
+    if (commentOwnerId && Number(commentOwnerId) !== Number(userId)) {
+      createNotification({
+        userId: commentOwnerId,
+        type: 'like',
+        title: '有人赞了你的评论',
+        content: '',
+        link: `/user-share`,
+        relatedUserId: Number(userId),
+      }).catch(() => {})
+    }
 
     // 获取更新后的点赞数
     const updated = await prisma.$queryRaw`

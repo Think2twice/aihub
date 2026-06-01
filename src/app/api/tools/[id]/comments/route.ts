@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canComment, incrementCommentCount } from '@/lib/daily-limit'
+import { createNotification } from '@/lib/notification'
 
 // GET /api/tools/[id]/comments - 获取工具的评论列表
 export async function GET(
@@ -106,6 +107,27 @@ export async function POST(
 
     // 增加用户评论次数
     await incrementCommentCount(userId)
+
+    // 通知管理员有新工具评论（异步，不阻塞主流程）
+    try {
+      const admins = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM users WHERE role = 'ADMIN' LIMIT 1
+      `
+      const adminId = (admins as any[])[0]?.id
+      if (adminId && Number(adminId) !== Number(userId)) {
+        const toolName = comment?.toolName || '某个工具'
+        createNotification({
+          userId: adminId,
+          type: 'comment',
+          title: `有人评论了工具「${toolName}」`,
+          content: content.trim().substring(0, 100),
+          link: `/tools/${comment?.toolId || toolId}`,
+          relatedUserId: Number(userId),
+        }).catch(() => {})
+      }
+    } catch (e) {
+      console.error('工具评论通知失败:', e)
+    }
 
     // 触发 AI 自动互动（异步，不阻塞响应）
     try {
