@@ -10,7 +10,7 @@ import { verifyAdmin } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   // 验证管理员身份
   const authResult = await verifyAdmin(request)
-  if (!authResult.authenticated) {
+  if (authResult instanceof NextResponse || !(authResult as any).authenticated) {
     return NextResponse.json({ error: '未授权' }, { status: 401 })
   }
 
