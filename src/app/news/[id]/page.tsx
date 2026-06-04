@@ -8,7 +8,8 @@ import { formatDate } from '@/lib/utils'
 import SubscribeCard from '@/components/SubscribeCard'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+
 
 interface NewsDetailPageProps {
   params: { id: string }

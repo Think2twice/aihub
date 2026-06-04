@@ -14,6 +14,8 @@ import { prisma } from '@/lib/prisma'
 import { formatNumber, formatDate } from '@/lib/utils'
 import type { Metadata } from 'next'
 
+export const revalidate = 600
+
 interface ToolPageProps {
   params: { slug: string }
 }

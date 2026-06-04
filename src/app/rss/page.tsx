@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { prisma } from '@/lib/prisma'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 export const metadata = {
   title: 'RSS 订阅 | AI Hub',
