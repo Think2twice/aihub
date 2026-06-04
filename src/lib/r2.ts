@@ -40,7 +40,7 @@ export async function uploadImage(
       ContentType: contentType,
     })
   )
-  return `https://${R2_BUCKET}.${R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${key}`
+  return `${R2_PUBLIC_URL}/${key}`
 }
 
 /**
@@ -58,7 +58,7 @@ export function parseBase64Image(dataUri: string): { buffer: Buffer; mimeType: s
  * 从图片 URL 判断是否是 R2 图片
  */
 export function isR2Image(url: string): boolean {
-  return url.includes('.r2.cloudflarestorage.com') || url.includes(R2_BUCKET)
+  return url.includes('.r2.dev') || url.includes(R2_PUBLIC_URL)
 }
 
 // 检查环境变量是否配置
