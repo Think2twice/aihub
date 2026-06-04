@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
       whereClause += ` AND s."toolId" = ${parseInt(toolId)}`
     }
     if (search) {
-      const lowerSearch = search.toLowerCase()
-      whereClause += ` AND (LOWER(s.content) LIKE '%${lowerSearch}%' OR LOWER(u.username) LIKE '%${lowerSearch}%' OR LOWER(t.name) LIKE '%${lowerSearch}%')`
+      whereClause += ` AND (LOWER(s.content) LIKE '%' || $1 || '%' OR LOWER(u.username) LIKE '%' || $1 || '%' OR LOWER(t.name) LIKE '%' || $1 || '%')`
     }
 
     const orderBy = sort === 'hot' ? 's.likes DESC, s."createdAt" DESC' : 's."createdAt" DESC'
+    const params: any[] = search ? [search] : []
 
     // 获取分享列表 - 使用子查询避免GROUP BY问题
     const shares = await prisma.$queryRawUnsafe(`
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       _count: {
         comments: Number(s.commentsCount || 0)
       }
-    }))
+    }), ...params)
 
     // 获取总数
     const totalResult = await prisma.$queryRawUnsafe(`
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN users u ON s."userId" = u.id
       LEFT JOIN tools t ON s."toolId" = t.id
       ${whereClause}
-    `)
+    `, ...params)
     const total = Number((totalResult as any)[0].count)
 
     return NextResponse.json({
