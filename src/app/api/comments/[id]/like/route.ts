@@ -4,6 +4,7 @@ import { canLike, incrementLikeCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
 import { addExp } from '@/lib/add-exp'
 import { EXP_RULES } from '@/lib/level'
+import { checkAndUnlock } from '@/lib/check-achievements'
 
 // POST /api/comments/[id]/like - 点赞/取消点赞评论
 export async function POST(
@@ -61,6 +62,8 @@ export async function POST(
       }).catch(() => {})
       // 评论获赞加经验
       addExp(Number(commentOwnerId), EXP_RULES.GET_LIKE_ON_COMMENT).catch(() => {})
+      // 成就检查
+      checkAndUnlock(Number(commentOwnerId)).catch(() => {})
     }
 
     // 获取更新后的点赞数

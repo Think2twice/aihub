@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getLevelByExp, EXP_RULES } from '@/lib/level'
+import { checkAndUnlock } from '@/lib/check-achievements'
 
 // POST /api/user/sign-in
 export async function POST(request: NextRequest) {
@@ -54,6 +55,9 @@ export async function POST(request: NextRequest) {
       `UPDATE users SET level = $1 WHERE id = $2`,
       newLevel, parseInt(userId)
     )
+
+    // 成就检查
+    checkAndUnlock(parseInt(userId)).catch(() => {})
 
     return NextResponse.json({
       success: true,

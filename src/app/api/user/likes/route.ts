@@ -4,6 +4,7 @@ import { canLike, incrementLikeCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
 import { addExp } from '@/lib/add-exp'
 import { EXP_RULES } from '@/lib/level'
+import { checkAndUnlock } from '@/lib/check-achievements'
 
 // GET /api/user/likes?userId=xxx
 export async function GET(request: NextRequest) {
@@ -105,6 +106,8 @@ export async function POST(request: NextRequest) {
           }).catch(() => {})
           // 点赞加经验（给被赞的人）
           addExp(Number(ownerId), EXP_RULES.GET_LIKE_ON_SHARE).catch(() => {})
+          // 成就检查
+          checkAndUnlock(Number(ownerId)).catch(() => {})
         }
       } catch (e) {
         console.error('点赞通知失败:', e)

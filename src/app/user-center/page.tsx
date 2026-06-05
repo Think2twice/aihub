@@ -11,7 +11,7 @@ import {
   X, Lock, Bell, Eye, EyeOff, Loader2, Check,
   Mail, Globe, MessageSquare, Shield, UserCircle,
   Volume2, VolumeX, Users, AlertCircle, AlertTriangle, BarChart3,
-  UserPlus, Info, Clock, CheckCheck
+  UserPlus, Info, Clock, CheckCheck, Trophy
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -19,6 +19,7 @@ import Avatar from '@/components/Avatar'
 import { getAvatarInitial } from '@/lib/utils'
 import { getShareImages } from '@/lib/share-image'
 import { useExpToast } from '@/components/ExpToast'
+import AchievementWall from '@/components/AchievementWall'
 
 interface UserData {
   id: number
@@ -2016,6 +2017,7 @@ export default function UserCenterPage() {
                     { id: 'likedTools', label: '我的点赞', icon: ThumbsUp },
                     { id: 'favorites', label: '我的收藏', icon: Bookmark },
                     { id: 'favoriteShares', label: '收藏分享', icon: Heart },
+                    { id: 'achievements', label: '成就', icon: Trophy },
                     { id: 'notifications', label: '通知', icon: Bell },
                     { id: 'settings', label: '设置', icon: Settings },
                   ].map((tab) => (
@@ -2196,6 +2198,20 @@ export default function UserCenterPage() {
                           )
                         })()}
                       </>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'achievements' && (
+                  <div>
+                    {user?.id ? (
+                      <AchievementWall userId={user.id} />
+                    ) : (
+                      <EmptyState
+                        icon={Trophy}
+                        title="请先登录"
+                        description="登录后查看你的成就"
+                      />
                     )}
                   </div>
                 )}

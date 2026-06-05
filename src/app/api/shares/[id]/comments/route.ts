@@ -4,6 +4,7 @@ import { canComment, incrementCommentCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
 import { addExp } from '@/lib/add-exp'
 import { EXP_RULES } from '@/lib/level'
+import { checkAndUnlock } from '@/lib/check-achievements'
 
 // GET /api/shares/[id]/comments - 获取分享的评论列表
 export async function GET(
@@ -105,6 +106,8 @@ export async function POST(
     await incrementCommentCount(userId)
     // 评论加经验
     addExp(Number(userId), EXP_RULES.CREATE_COMMENT).catch(() => {})
+    // 成就检查
+    checkAndUnlock(Number(userId)).catch(() => {})
 
     // 发送通知给分享作者
     try {
