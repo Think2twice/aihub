@@ -771,12 +771,12 @@ export default function AdminPage() {
                           {getStatusBadge(tool.status)}
                           <span className="text-gray-300">|</span>
                           {tool.source === 'user' ? (
-                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">用户提交</span>
+                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full whitespace-nowrap">用户提交</span>
                           ) : (
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">我的工具</span>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full whitespace-nowrap">我的工具</span>
                           )}
                           {/* 定价类型 */}
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${
+                          <span className={`px-2 py-0.5 text-xs rounded-full whitespace-nowrap ${
                             tool.pricingType === 'FREE' ? 'bg-green-100 text-green-700' :
                             tool.pricingType === 'FREEMIUM' ? 'bg-blue-100 text-blue-700' :
                             tool.pricingType === 'PAID' ? 'bg-red-100 text-red-700' :
