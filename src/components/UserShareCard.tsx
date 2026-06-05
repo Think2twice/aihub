@@ -217,7 +217,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
               id: c.userId || 0,
               name: c.userName || '匿名用户',
               role: c.userRole || c.role || undefined,
-              avatar: isAI ? '/avatars/ai-lobster.svg' : (c.userAvatarUrl || '/default-avatar.png')
+              avatar: isAI ? '/avatars/ai-lobster.svg' : (c.userAvatarUrl || '')
             },
             content: c.content,
             time: formatTime(c.createdAt),
