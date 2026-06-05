@@ -4,6 +4,7 @@ import { verifyAdmin } from '@/lib/auth'
 import { addExp } from '@/lib/add-exp'
 import { EXP_RULES } from '@/lib/level'
 import { checkAndUnlock } from '@/lib/check-achievements'
+import { createNotification } from '@/lib/notification'
 
 // POST /api/admin/shares/[id]/review  审核分享/下架/恢复
 export async function POST(
@@ -44,6 +45,19 @@ export async function POST(
       where: { id: shareId },
       data: updateData
     })
+
+    // 通知分享作者（非恢复操作）
+    if (action !== 'restore') {
+      const actionLabel = action === 'approve' ? '已通过' : action === 'reject' ? '未通过' : '已下架'
+      const shareTypeLabel = share.type === 'tool' ? '工具分享' : share.type === 'tech_share' ? '技术分享' : share.type === 'qa_help' ? '问答求助' : '生活圈动态'
+      createNotification({
+        userId: share.userId,
+        type: 'system',
+        title: `${shareTypeLabel}${actionLabel}`,
+        content: `你的${shareTypeLabel}${actionLabel}${note ? `: ${note}` : ''}`,
+        link: '/user-center?tab=submissions'
+      }).catch(() => {})
+    }
 
     // 审核通过时给分享作者加经验
     if (action === 'approve') {

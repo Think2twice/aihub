@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdmin } from '@/lib/auth'
+import { createNotification } from '@/lib/notification'
 
 // POST /api/admin/tools/[id]/review
 export async function POST(
@@ -83,6 +84,18 @@ export async function POST(
       SELECT * FROM tools WHERE id = ${toolId}
     `
     const tool = (toolResult as any[])[0]
+
+    // 通知工具提交者（非管理员审核时）
+    if (action !== 'restore' && tool?.submittedBy) {
+      const actionLabel = action === 'approve' ? '已通过' : action === 'reject' ? '未通过' : '已下架'
+      createNotification({
+        userId: tool.submittedBy,
+        type: 'system',
+        title: `工具${actionLabel}`,
+        content: `你提交的工具「${tool.name}」${actionLabel}${note ? `: ${note}` : ''}`,
+        link: '/user-center?tab=submissions'
+      }).catch(() => {})
+    }
 
     return NextResponse.json({ tool })
   } catch (error: any) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createNotification } from '@/lib/notification'
 
 // CORS 头 + 缓存控制（5分钟CDN缓存，降低Supabase带宽消耗）
 const CORS = { 
@@ -142,6 +143,24 @@ export async function POST(request: NextRequest) {
         submitToolLogo: logoUrl?.trim() || null
       }
     })
+
+    // 非管理员提交工具时通知站长
+    if (!isAdmin) {
+      // 通知所有管理员
+      prisma.$queryRaw<Array<{ id: number }>>`SELECT id FROM users WHERE role = 'ADMIN'`
+        .then(admins => {
+          admins.forEach(admin => {
+            createNotification({
+              userId: admin.id,
+              type: 'system',
+              title: '新工具待审核',
+              content: `用户提交了工具「${name.trim()}」`,
+              link: '/admin'
+            }).catch(() => {})
+          })
+        })
+        .catch(() => {})
+    }
 
     return NextResponse.json({ 
       share,
