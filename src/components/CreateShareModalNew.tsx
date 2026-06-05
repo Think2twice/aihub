@@ -12,9 +12,10 @@ interface Props {
 }
 
 export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', onSuccess }: Props) {
-  const MAX_CONTENT = mode === 'tech' ? 1500 : 100
-  const MAX_IMAGES = 9
+  const MAX_CONTENT = mode === 'tech' ? 1500 : (mode === 'qa' ? 200 : 100)
+  const MAX_IMAGES = mode === 'qa' ? 0 : 9
   const isTechMode = mode === 'tech'
+  const isQaMode = mode === 'qa'
 
   const [user, setUser] = useState<{ id: number; username: string; avatarUrl?: string } | null>(null)
   const [content, setContent] = useState('')
@@ -204,7 +205,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
       return
     }
     if (!content.trim() && images.length === 0) {
-      setError('请填写内容或上传图片')
+      setError(isQaMode ? '请填写你的问题' : '请填写内容或上传图片')
       return
     }
     if (content.length > MAX_CONTENT) {
@@ -221,7 +222,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
         body: JSON.stringify({
           type: mode,
           content: content.trim(),
-          images: images.length > 0 ? images : null,
+          images: isQaMode ? null : (images.length > 0 ? images : null),
           userId: user.id,
           tags: selectedTags.length > 0 ? selectedTags.join(',') : null
         })
@@ -258,7 +259,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#2a2a3a] flex-shrink-0 bg-[#0a0a0f]">
           <h2 className="text-lg font-bold text-[#e0e0e0] font-orbitron uppercase tracking-wider">
-            <span className="text-[#00ff88]">{'>'}</span> {isTechMode ? '发布技术分享' : '发布动态'}
+            <span className="text-[#00ff88]">{'>'}</span> {isTechMode ? '发布技术分享' : isQaMode ? '提问' : '发布动态'}
           </h2>
           <button 
             onClick={onClose}
@@ -292,7 +293,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
-                    {isTechMode ? '技术分享' : '发布动态'}
+                    {isTechMode ? '技术分享' : isQaMode ? '提问' : '发布动态'}
                   </span>
                 </div>
               ) : (
@@ -340,7 +341,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
                   setContent(e.target.value)
                 }
               }}
-              placeholder={isTechMode ? '分享你的技术经验、教程、踩坑记录...\n支持 Markdown 格式' : '分享你的生活...'}
+              placeholder={isTechMode ? '分享你的技术经验、教程、踩坑记录...\n支持 Markdown 格式' : isQaMode ? '描述你的问题，尽量详细一些...' : '分享你的生活...'}
               className={`w-full ${isTechMode ? 'h-[300px]' : 'h-[120px]'} bg-[#0a0a0f] border text-[#e0e0e0] text-sm resize-none focus:outline-none transition-all p-4 font-mono ${
                 content.length >= MAX_CONTENT
                   ? 'border-[#ff3366] focus:border-[#ff3366] focus:shadow-[0_0_10px_#ff336640]'
@@ -406,9 +407,11 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             <span className="text-[10px] font-mono text-[#4b5563]">
               {'>'} 文字上限 <span className="text-[#00d4ff]">{MAX_CONTENT}</span> 字
             </span>
-            <span className="text-[10px] font-mono text-[#4b5563]">
-              {'>'} 图片上限 <span className="text-[#00d4ff]">{MAX_IMAGES}</span> 张
-            </span>
+            {!isQaMode && (
+              <span className="text-[10px] font-mono text-[#4b5563]">
+                {'>'} 图片上限 <span className="text-[#00d4ff]">{MAX_IMAGES}</span> 张
+              </span>
+            )}
             {images.length > 1 && (
               <span className="text-[10px] font-mono text-[#00ff88]">
                 {'>'} 拖拽图片可调整顺序
@@ -416,8 +419,8 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             )}
           </div>
 
-          {/* 图片预览 - 支持拖拽排序（非技术分享模式） */}
-          {!isTechMode && (
+          {/* 图片预览 - 支持拖拽排序（非技术分享/问答模式） */}
+          {!isTechMode && !isQaMode && (
           <div className="flex flex-wrap gap-2 mt-4">
             {images.map((img, idx) => (
               <div 
@@ -516,6 +519,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             )}
           </button>
 
+          {!isQaMode && (
           <input
             ref={fileInputRef}
             type="file"
@@ -524,6 +528,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             className="hidden"
             onChange={isTechMode ? handleImageUploadMd : handleImageUpload}
           />
+          )}
         </div>
       </div>
     </div>,
