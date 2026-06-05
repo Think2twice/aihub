@@ -713,7 +713,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
               )}
               {/* 类型标签 */}
               <span 
-                className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium border ${
+                className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium border whitespace-nowrap flex-shrink-0 ${
                   isTool 
                     ? 'border-[#f59e0b] text-[#f59e0b]' 
                     : 'border-[#00ff88] text-[#00ff88]'

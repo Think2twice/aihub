@@ -894,12 +894,12 @@ export default function UserCenterPage() {
                   style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
                   {statusLabels[tool.status] || tool.status}
                 </span>
-                <span className="text-xs px-1.5 py-0.5 font-mono bg-neon-green/10 text-neon-green border border-neon-green/30 whitespace-nowrap"
+                <span className="text-xs px-1.5 py-0.5 font-mono bg-neon-green/10 text-neon-green border border-neon-green/30 whitespace-nowrap flex-shrink-0"
                   style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
                   {tool.type === 'life' ? '生活圈' : tool.type === 'tech_share' ? '技术分享' : tool.type === 'qa_help' ? '问答求助' : '工具圈'}
                 </span>
                 {tool.category && (
-                  <span className="text-xs px-1.5 py-0.5 bg-cyber-muted/50 text-cyber-muted-foreground font-mono"
+                  <span className="text-xs px-1.5 py-0.5 bg-cyber-muted/50 text-cyber-muted-foreground font-mono whitespace-nowrap flex-shrink-0"
                     style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
                     {tool.category.name}
                   </span>
@@ -953,12 +953,12 @@ export default function UserCenterPage() {
               style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
               {statusLabels[tool.status] || tool.status}
             </span>
-            <span className="text-xs px-2 py-0.5 font-mono bg-neon-green/10 text-neon-green border border-neon-green/30 whitespace-nowrap"
+            <span className="text-xs px-2 py-0.5 font-mono bg-neon-green/10 text-neon-green border border-neon-green/30 whitespace-nowrap flex-shrink-0"
               style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
               {tool.type === 'life' ? '生活圈' : tool.type === 'tech_share' ? '技术分享' : tool.type === 'qa_help' ? '问答求助' : '工具圈'}
             </span>
             {tool.category && (
-              <span className="text-xs px-2 py-0.5 bg-cyber-muted/50 text-cyber-muted-foreground font-mono"
+              <span className="text-xs px-2 py-0.5 bg-cyber-muted/50 text-cyber-muted-foreground font-mono whitespace-nowrap flex-shrink-0"
                 style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}>
                 {tool.category.name}
               </span>
