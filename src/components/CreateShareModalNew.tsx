@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Image as ImageIcon, Send, Loader2, GripVertical } from 'lucide-react'
+import { X, Image as ImageIcon, Send, Loader2, GripVertical, Bold, Italic, Code, Link, Heading1, ImagePlus } from 'lucide-react'
 
 interface Props {
   isOpen: boolean
@@ -25,6 +25,75 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
   const [tagInput, setTagInput] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const linkInputRef = useRef<HTMLInputElement>(null)
+
+  // Markdown 工具栏操作
+  const insertMd = (before: string, after: string = '') => {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const selected = content.substring(start, end) || '文字'
+    const newText = content.substring(0, start) + before + selected + after + content.substring(end)
+    setContent(newText)
+    setTimeout(() => {
+      ta.focus()
+      const pos = start + before.length + selected.length + after.length
+      ta.setSelectionRange(pos, pos)
+    }, 0)
+  }
+
+  const insertLink = () => {
+    const url = prompt('输入链接地址（URL）:', 'https://')
+    if (!url) return
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const selected = content.substring(start, end) || '链接文字'
+    const markdown = `[${selected}](${url})`
+    const newText = content.substring(0, start) + markdown + content.substring(end)
+    setContent(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.setSelectionRange(start + markdown.length, start + markdown.length)
+    }, 0)
+  }
+
+  const insertImageMd = () => {
+    // 触发图片上传，等上传完成后自动插入 ![](url)
+    fileInputRef.current?.click()
+  }
+
+  const handleImageUploadMd = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (images.length + files.length > MAX_IMAGES) {
+      setError(`最多上传 ${MAX_IMAGES} 张图片`)
+      return
+    }
+    files.forEach(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        setError('单张图片不超过 10MB')
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const base64 = ev.target?.result as string
+        setImages(prev => [...prev, base64])
+        // 同时在文本中插入 Markdown 图片引用
+        const ta = textareaRef.current
+        if (ta) {
+          const start = ta.selectionStart
+          const md = `![${file.name}](${base64.substring(0, 50)}...)`
+          setContent(prev => prev.substring(0, start) + '\n' + md + '\n' + prev.substring(ta.selectionEnd))
+          setTimeout(() => ta.focus(), 0)
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+    e.target.value = ''
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -233,8 +302,38 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
           </div>
           
           {/* 文本输入 */}
+          {isTechMode && (
+            <div className="flex flex-wrap gap-1 mb-2 px-1 py-2 border border-[#2a2a3a] bg-[#0f0f1a]"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
+            >
+              <button onClick={() => insertMd('**', '**')} className="p-1.5 text-[#6b7280] hover:text-[#00ff88] hover:bg-[#1c1c2e] transition-all rounded" title="加粗 Ctrl+B">
+                <Bold className="w-4 h-4" />
+              </button>
+              <button onClick={() => insertMd('*', '*')} className="p-1.5 text-[#6b7280] hover:text-[#00ff88] hover:bg-[#1c1c2e] transition-all rounded" title="斜体 Ctrl+I">
+                <Italic className="w-4 h-4" />
+              </button>
+              <div className="w-px h-5 bg-[#2a2a3a] mx-1 self-center" />
+              <button onClick={() => insertMd('`', '`')} className="p-1.5 text-[#6b7280] hover:text-[#00d4ff] hover:bg-[#1c1c2e] transition-all rounded" title="行内代码">
+                <Code className="w-4 h-4" />
+              </button>
+              <button onClick={() => insertMd('```\n', '\n```')} className="p-1.5 text-[#6b7280] hover:text-[#00d4ff] hover:bg-[#1c1c2e] transition-all rounded text-[10px] font-mono font-bold" title="代码块">
+                &lt;/&gt;
+              </button>
+              <div className="w-px h-5 bg-[#2a2a3a] mx-1 self-center" />
+              <button onClick={() => insertMd('## ', '')} className="p-1.5 text-[#6b7280] hover:text-[#f59e0b] hover:bg-[#1c1c2e] transition-all rounded text-xs font-bold" title="标题 H2">
+                <Heading1 className="w-4 h-4" />
+              </button>
+              <button onClick={() => insertMd('[', '](url)')} className="p-1.5 text-[#6b7280] hover:text-[#00ff88] hover:bg-[#1c1c2e] transition-all rounded" title="插入链接">
+                <Link className="w-4 h-4" />
+              </button>
+              <button onClick={insertImageMd} className="p-1.5 text-[#6b7280] hover:text-[#00ff88] hover:bg-[#1c1c2e] transition-all rounded" title="插入图片">
+                <ImagePlus className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <div className="relative">
             <textarea
+              ref={textareaRef}
               value={content}
               onChange={e => {
                 if (e.target.value.length <= MAX_CONTENT) {
@@ -421,7 +520,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             accept="image/*"
             multiple
             className="hidden"
-            onChange={handleImageUpload}
+            onChange={isTechMode ? handleImageUploadMd : handleImageUpload}
           />
         </div>
       </div>
