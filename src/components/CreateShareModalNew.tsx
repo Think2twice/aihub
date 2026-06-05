@@ -416,7 +416,8 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
             )}
           </div>
 
-          {/* 图片预览 - 支持拖拽排序 */}
+          {/* 图片预览 - 支持拖拽排序（非技术分享模式） */}
+          {!isTechMode && (
           <div className="flex flex-wrap gap-2 mt-4">
             {images.map((img, idx) => (
               <div 
@@ -476,6 +477,7 @@ export default function CreateShareModalNew({ isOpen, onClose, mode = 'life', on
               </button>
             )}
           </div>
+          )}
 
           {/* 错误提示 */}
           {error && (
