@@ -465,10 +465,10 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
           <div className="flex-1">
             {/* Tab 切换 */}
             <div className="bg-cyber-card border border-cyber-border clip-chamfer p-2 mb-6">
-              <div className="flex gap-1">
+              <div className="flex gap-1 overflow-x-auto scrollbar-none">
                 <Link 
                   href={`/user-share?tab=tool${sort ? `&sort=${sort}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
+                  className={`flex-shrink-0 md:flex-1 whitespace-nowrap flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
                     tab === 'tool' 
                       ? 'bg-neon-green text-cyber-background shadow-neon font-bold' 
                       : 'text-cyber-muted-foreground hover:text-neon-green hover:bg-neon-green/10'
@@ -482,7 +482,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 </Link>
                 <Link 
                   href={`/user-share?tab=life${sort ? `&sort=${sort}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
+                  className={`flex-shrink-0 md:flex-1 whitespace-nowrap flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
                     tab === 'life' 
                       ? 'bg-neon-cyan text-cyber-background shadow-neon-tertiary font-bold' 
                       : 'text-cyber-muted-foreground hover:text-neon-cyan hover:bg-neon-cyan/10'
@@ -496,7 +496,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 </Link>
                 <Link 
                   href={`/user-share?tab=tech${sort ? `&sort=${sort}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
+                  className={`flex-shrink-0 md:flex-1 whitespace-nowrap flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
                     tab === 'tech' 
                       ? 'bg-neon-green/80 text-cyber-background shadow-neon font-bold' 
                       : 'text-cyber-muted-foreground hover:text-neon-green hover:bg-neon-green/10'
@@ -510,7 +510,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 </Link>
                 <Link 
                   href={`/user-share?tab=qa${sort ? `&sort=${sort}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
+                  className={`flex-shrink-0 md:flex-1 whitespace-nowrap flex items-center justify-center gap-2 px-4 py-3 clip-chamfer-sm text-sm font-mono uppercase tracking-wider transition-all duration-300 ${
                     tab === 'qa' 
                       ? 'bg-neon-magenta/80 text-cyber-background shadow-neon-secondary font-bold' 
                       : 'text-cyber-muted-foreground hover:text-neon-magenta hover:bg-neon-magenta/10'
