@@ -204,6 +204,22 @@ export default function UserCenterPage() {
     }
   }
 
+  // 删除通知
+  const handleDeleteNotif = async (id: number) => {
+    if (!user?.id) return
+    setNotifList(prev => prev.filter(n => n.id !== id))
+    setNotifTotal(prev => Math.max(0, prev - 1))
+    try {
+      await fetch('/api/notifications/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId: id, userId: user.id }),
+      })
+    } catch (e) {
+      console.error('删除通知失败:', e)
+    }
+  }
+
   // 全部标记已读
   const handleMarkAllNotifRead = async () => {
     if (!user?.id) return
@@ -2150,6 +2166,13 @@ export default function UserCenterPage() {
                                         )}
                                       </button>
                                     )}
+                                    <button
+                                      onClick={() => handleDeleteNotif(n.id)}
+                                      className="p-1 text-cyber-muted-foreground hover:text-neon-magenta opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                                      title="删除"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
                                   </div>
                                   <div className="flex items-center gap-2 mt-1">
                                     <span className="flex items-center gap-1 text-[10px] text-cyber-muted-foreground font-mono">
