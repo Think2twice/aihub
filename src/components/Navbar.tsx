@@ -260,6 +260,7 @@ export default function Navbar() {
     { href: '/tools', label: 'AI工具' },
     { href: '/news', label: 'AI资讯' },
     { href: '/trending', label: '趋势榜' },
+    { href: '/leaderboard', label: '排行榜' },
     { href: '/opensource', label: '开源项目' },
   ]
 
