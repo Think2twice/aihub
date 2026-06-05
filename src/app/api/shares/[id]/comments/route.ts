@@ -107,26 +107,24 @@ export async function POST(
     addExp(Number(userId), EXP_RULES.CREATE_COMMENT).catch(() => {})
 
     // 发送通知给分享作者
-    if (Number(userId) !== comment.userId) {
-      try {
-        const shareOwner = await prisma.$queryRaw<Array<{ userId: number }>>`
-          SELECT "userId" FROM shares WHERE id = ${shareId}
-        `
-        const ownerId = (shareOwner as any[])[0]?.userId
-        if (ownerId && Number(ownerId) !== Number(userId)) {
-          const notifyTitle = parentId ? '有人回复了你的评论' : '有人评论了你的分享'
-          createNotification({
-            userId: ownerId,
-            type: 'comment',
-            title: notifyTitle,
-            content: content.trim().substring(0, 100),
-            link: `/share/${shareId}`,
-            relatedUserId: Number(userId),
-          }).catch(() => {})
-        }
-      } catch (e) {
-        console.error('评论通知失败:', e)
+    try {
+      const shareOwner = await prisma.$queryRaw<Array<{ userId: number }>>`
+        SELECT "userId" FROM shares WHERE id = ${shareId}
+      `
+      const ownerId = (shareOwner as any[])[0]?.userId
+      if (ownerId && Number(ownerId) !== Number(userId)) {
+        const notifyTitle = parentId ? '有人回复了你的评论' : '有人评论了你的分享'
+        createNotification({
+          userId: ownerId,
+          type: 'comment',
+          title: notifyTitle,
+          content: content.trim().substring(0, 100),
+          link: `/share/${shareId}`,
+          relatedUserId: Number(userId),
+        }).catch(() => {})
       }
+    } catch (e) {
+      console.error('评论通知失败:', e)
     }
 
     // 触发 AI 自动互动（异步，不阻塞响应）
