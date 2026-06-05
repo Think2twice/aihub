@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
+import { useExpToast } from '@/components/ExpToast'
 import { 
   Heart, MessageCircle, Share2, Send, MoreHorizontal,
   Smile, Image as ImageIcon, AtSign, Hash, ThumbsUp,
@@ -83,6 +84,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
   const isPinned = share.pinnedUntil && new Date(share.pinnedUntil) > new Date()
   const isAdmin = user.role === 'ADMIN'
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false)
+  const { showExpToast } = useExpToast()
   const [isLiked, setIsLiked] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
   const [likeCount, setLikeCount] = useState(share.likes)
@@ -434,6 +436,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
         setUploadedImages([])
         setShowEmoji(false)
         setReplyTo(null)
+        showExpToast(10, '+10 EXP 评论奖励')
     } catch (error) {
       console.error('发表评论失败:', error)
     } finally {
