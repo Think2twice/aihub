@@ -117,6 +117,22 @@ export default function NotificationsPage() {
     }
   }
 
+  // 删除单条通知
+  const handleDelete = async (id: number) => {
+    if (!user?.id) return
+    setNotifications(prev => prev.filter(n => n.id !== id))
+    try {
+      await fetch('/api/notifications/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId: id, userId: user.id }),
+      })
+    } catch (e) {
+      console.error('删除通知失败:', e)
+      fetchNotifications(page)
+    }
+  }
+
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   if (!user) {
@@ -257,6 +273,13 @@ export default function NotificationsPage() {
                             )}
                           </button>
                         )}
+                        <button
+                          onClick={() => handleDelete(n.id)}
+                          className="p-1.5 text-cyber-muted-foreground hover:text-neon-magenta hover:bg-neon-magenta/10 transition-all opacity-0 group-hover:opacity-100"
+                          title="删除通知"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
 

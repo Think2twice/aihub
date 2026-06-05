@@ -79,6 +79,19 @@ export async function markAllAsRead(userId: number) {
 }
 
 /**
+ * Delete a single notification.
+ */
+export async function deleteNotification(notificationId: number, userId: number) {
+  try {
+    await prisma.$executeRaw`
+      DELETE FROM notifications WHERE "id" = ${notificationId} AND "userId" = ${userId}
+    `;
+  } catch (error) {
+    console.error('[Notification] Failed to delete notification:', error);
+  }
+}
+
+/**
  * Get paginated notifications for a user.
  */
 export async function getNotifications(
