@@ -45,31 +45,37 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'trending') {
-      // 趋势上升 - 7天内热度最高的工具
+      // 趋势上升 - 按7天增长率排序
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
       const dateStr = sevenDaysAgo.toISOString().split('T')[0]
 
       const trending = await prisma.$queryRawUnsafe(`
         SELECT t.id, t.name, t.slug, t."viewCount", t.stars, t.upvotes,
-          t."shortDesc", t."logoUrl",
-          COALESCE(h7."viewCount", 0) as "weekViews",
+          t."shortDesc",
           COALESCE(h1."viewCount", 0) as "todayViews",
+          h7."viewCount" as "weekAgoViews",
           c.name as "categoryName"
         FROM tools t
         LEFT JOIN categories c ON t."categoryId" = c.id
         LEFT JOIN LATERAL (
           SELECT "viewCount" FROM tool_trend_histories
-          WHERE "toolId" = t.id AND date >= $1
-          ORDER BY date DESC LIMIT 1
-        ) h7 ON true
-        LEFT JOIN LATERAL (
-          SELECT "viewCount" FROM tool_trend_histories
           WHERE "toolId" = t.id AND date = CURRENT_DATE::text
           ORDER BY date DESC LIMIT 1
         ) h1 ON true
+        LEFT JOIN LATERAL (
+          SELECT "viewCount" FROM tool_trend_histories
+          WHERE "toolId" = t.id AND date = $1
+          ORDER BY date DESC LIMIT 1
+        ) h7 ON true
         WHERE t.status = 'approved' AND t."isActive" = true
-        ORDER BY t."viewCount" DESC
+          AND h1."viewCount" IS NOT NULL
+        ORDER BY
+          CASE WHEN h7."viewCount" IS NOT NULL AND h7."viewCount" > 0
+            THEN (h1."viewCount" - h7."viewCount")::float / h7."viewCount"
+            ELSE 0
+          END DESC,
+          t."viewCount" DESC
         LIMIT ${limit}
       `, dateStr)
 

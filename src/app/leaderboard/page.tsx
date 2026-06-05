@@ -97,24 +97,30 @@ async function getLeaderboard(type: TabKey, limit = 20) {
 
       const trending = await prisma.$queryRawUnsafe(`
         SELECT t.id, t.name, t.slug, t."viewCount", t.stars, t.upvotes,
-          t."shortDesc", t."logoUrl",
-          COALESCE(h7."viewCount", 0) as "weekViews",
+          t."shortDesc",
           COALESCE(h1."viewCount", 0) as "todayViews",
+          h7."viewCount" as "weekAgoViews",
           c.name as "categoryName"
         FROM tools t
         LEFT JOIN categories c ON t."categoryId" = c.id
         LEFT JOIN LATERAL (
           SELECT "viewCount" FROM tool_trend_histories
-          WHERE "toolId" = t.id AND date >= $1
-          ORDER BY date DESC LIMIT 1
-        ) h7 ON true
-        LEFT JOIN LATERAL (
-          SELECT "viewCount" FROM tool_trend_histories
           WHERE "toolId" = t.id AND date = CURRENT_DATE::text
           ORDER BY date DESC LIMIT 1
         ) h1 ON true
+        LEFT JOIN LATERAL (
+          SELECT "viewCount" FROM tool_trend_histories
+          WHERE "toolId" = t.id AND date = $1
+          ORDER BY date DESC LIMIT 1
+        ) h7 ON true
         WHERE t.status = 'approved' AND t."isActive" = true
-        ORDER BY t."viewCount" DESC
+          AND h1."viewCount" IS NOT NULL
+        ORDER BY
+          CASE WHEN h7."viewCount" IS NOT NULL AND h7."viewCount" > 0
+            THEN (h1."viewCount" - h7."viewCount")::float / h7."viewCount"
+            ELSE 0
+          END DESC,
+          t."viewCount" DESC
         LIMIT ${limit}
       `, dateStr)
       return trending as any[]
@@ -223,7 +229,14 @@ export default async function LeaderboardPage({ searchParams }: Props) {
           <div className="space-y-3">
             {data.length === 0 && (
               <div className="bg-cyber-card border border-cyber-border clip-chamfer p-12 text-center">
-                <p className="text-cyber-muted-foreground font-mono">暂无排行数据</p>
+                {validTab === 'trending' ? (
+                  <>
+                    <p className="text-cyber-muted-foreground font-mono mb-2">趋势数据收集中...</p>
+                    <p className="text-cyber-muted-foreground/60 text-xs font-mono">每日UTC 2:00自动记录，积累几天后即可显示涨幅排名</p>
+                  </>
+                ) : (
+                  <p className="text-cyber-muted-foreground font-mono">暂无排行数据</p>
+                )}
               </div>
             )}
 
@@ -332,10 +345,15 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             ))}
 
             {validTab === 'trending' && (data as any[]).map((item: any, index: number) => {
-              const weekViews = Number(item.weekViews || 0)
               const todayViews = Number(item.todayViews || 0)
-              const growth = weekViews > 0 ? ((todayViews - weekViews) / weekViews * 100).toFixed(0) : '0'
-              const growthNum = parseFloat(growth)
+              const weekAgoViews = Number(item.weekAgoViews || 0)
+              let growth = 0
+              if (weekAgoViews > 0 && todayViews > 0) {
+                growth = Math.round((todayViews - weekAgoViews) / weekAgoViews * 100)
+              } else if (todayViews > 0 && weekAgoViews === 0 && item.weekAgoViews !== null) {
+                // 7天前是0但今天有 - 从无到有
+                growth = 999
+              }
               
               return (
                 <Link
@@ -373,10 +391,10 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                         {formatNumber(Number(item.viewCount))}
                       </span>
                       <span className={`flex items-center gap-1 font-mono font-bold ${
-                        growthNum > 0 ? 'text-neon-green' : growthNum < 0 ? 'text-neon-magenta' : 'text-cyber-muted-foreground'
+                        growth > 0 ? 'text-neon-green' : growth < 0 ? 'text-neon-magenta' : 'text-cyber-muted-foreground'
                       }`}>
-                        {growthNum > 0 ? <ArrowUp className="w-3.5 h-3.5" /> : growthNum < 0 ? <ArrowDown className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
-                        {growth}%
+                        {growth > 0 ? <ArrowUp className="w-3.5 h-3.5" /> : growth < 0 ? <ArrowDown className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+                        {growth > 0 ? '+' : ''}{growth}%
                       </span>
                     </div>
                   </div>

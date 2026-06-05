@@ -1,0 +1,30 @@
+name: 每日趋势数据记录
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 每天 UTC 2:00（北京时间 10:00）
+  workflow_dispatch:        # 可手动触发
+
+jobs:
+  record-trends:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 安装依赖
+        run: |
+          npm ci
+          npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: 📊 记录每日趋势数据
+        run: npx tsx src/scripts/record-daily-trends.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
