@@ -76,8 +76,8 @@ async function getLeaderboard(type: TabKey, limit = 20) {
   try {
     if (type === 'tools') {
       const tools = await prisma.$queryRawUnsafe(`
-        SELECT id, name, slug, "viewCount", stars, upvotes,
-          "shortDesc", "logoUrl",
+        SELECT t.id, t.name, t.slug, t."viewCount", t.stars, t.upvotes,
+          t."shortDesc", t."logoUrl",
           c.name as "categoryName"
         FROM tools t
         LEFT JOIN categories c ON t."categoryId" = c.id

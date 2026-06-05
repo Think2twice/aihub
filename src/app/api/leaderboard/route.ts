@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     if (type === 'tools') {
       // 热门工具 - 按 viewCount 降序
       const tools = await prisma.$queryRawUnsafe(`
-        SELECT id, name, slug, "viewCount", stars, upvotes,
+        SELECT t.id, t.name, t.slug, t."viewCount", t.stars, t.upvotes,
           "shortDesc", "logoUrl",
           c.name as "categoryName"
         FROM tools t
