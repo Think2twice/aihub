@@ -4,8 +4,8 @@ import { prisma } from '@/lib/prisma'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { 
-  TrendingUp, Heart, MessageCircle, Eye, Star, Users,
-  Zap, ArrowUp, ArrowDown, Minus, Flame, Trophy,
+  TrendingUp, Heart, MessageCircle, Eye, Users,
+  ArrowUp, ArrowDown, Minus, Flame,
   Code, Sparkles, Wrench, HelpCircle, Crown
 } from 'lucide-react'
 
@@ -22,7 +22,6 @@ interface Props {
 
 const TAB_CONFIG = {
   shares: { label: '热门分享', icon: Flame, color: 'neon-green', activeBg: 'bg-neon-green text-cyber-background shadow-neon' },
-  tools: { label: '热门工具', icon: Zap, color: 'neon-cyan', activeBg: 'bg-neon-cyan text-cyber-background shadow-neon-tertiary' },
   users: { label: '活跃用户', icon: Users, color: 'neon-magenta', activeBg: 'bg-neon-magenta/80 text-cyber-background shadow-neon-secondary' },
   trending: { label: '趋势上升', icon: TrendingUp, color: 'neon-green/80', activeBg: 'bg-neon-green/80 text-cyber-background shadow-neon' },
 } as const
@@ -74,20 +73,6 @@ function getRankBg(index: number) {
 
 async function getLeaderboard(type: TabKey, limit = 20) {
   try {
-    if (type === 'tools') {
-      const tools = await prisma.$queryRawUnsafe(`
-        SELECT t.id, t.name, t.slug, t."viewCount", t.stars, t.upvotes,
-          t."shortDesc", t."logoUrl",
-          c.name as "categoryName"
-        FROM tools t
-        LEFT JOIN categories c ON t."categoryId" = c.id
-        WHERE t.status = 'approved' AND t."isActive" = true
-        ORDER BY t."viewCount" DESC, t.stars DESC
-        LIMIT ${limit}
-      `)
-      return tools as any[]
-    }
-
     if (type === 'users') {
       const users = await prisma.$queryRawUnsafe(`
         SELECT u.id, u.username, u."avatarUrl", u."createdAt" as "joinDate",
@@ -292,55 +277,6 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                     <span className="flex items-center gap-1">
                       <MessageCircle className="w-3.5 h-3.5 text-neon-cyan" />
                       {item.commentsCount}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-
-            {validTab === 'tools' && (data as any[]).map((item: any, index: number) => (
-              <Link
-                key={item.id}
-                href={`/tools/${item.slug}`}
-                className={`block bg-cyber-card border ${getRankBg(index)} clip-chamfer p-4 hover:bg-cyber-muted/50 transition-all duration-200 group`}
-              >
-                <div className="flex items-center gap-4">
-                  {/* 排名 */}
-                  <div className={`w-10 h-10 flex items-center justify-center font-orbitron font-bold text-lg ${getRankColor(index)} flex-shrink-0`}>
-                    {index === 0 ? <Crown className="w-6 h-6" /> : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                  </div>
-
-                  {/* Logo - 统一首字母 */}
-                  <div className="w-10 h-10 flex items-center justify-center bg-neon-cyan/10 border border-neon-cyan/30 clip-chamfer-sm flex-shrink-0">
-                    <span className="text-lg font-bold text-neon-cyan font-orbitron">
-                      {item.name?.charAt(0).toUpperCase() || '?'}
-                    </span>
-                  </div>
-
-                  {/* 信息 */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-orbitron font-bold text-cyber-foreground group-hover:text-neon-cyan transition-colors truncate">
-                      {item.name}
-                    </h3>
-                    {item.shortDesc && (
-                      <p className="text-xs text-cyber-muted-foreground/60 mt-0.5 font-mono truncate">{item.shortDesc}</p>
-                    )}
-                    {item.categoryName && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-neon-cyan/10 text-neon-cyan font-mono mt-1 inline-block clip-chamfer-sm">
-                        {item.categoryName}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* 数据 */}
-                  <div className="flex items-center gap-3 text-xs text-cyber-muted-foreground flex-shrink-0">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-neon-cyan" />
-                      {formatNumber(Number(item.viewCount))}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 text-yellow-400" />
-                      {formatNumber(Number(item.stars))}
                     </span>
                   </div>
                 </div>
