@@ -8,6 +8,7 @@ import UserShareCard from '@/components/UserShareCard'
 import SharePageClient from './SharePageClient'
 import LiveShareStats from './LiveShareStats'
 import SiteAnnouncement from '@/components/SiteAnnouncement'
+import SignInCard from '@/components/SignInCard'
 import { 
   TrendingUp, 
   Clock, 
@@ -634,6 +635,9 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 </li>
               </ul>
             </div>
+
+            {/* 签到/等级 */}
+            <SignInCard />
 
             {/* QQ交流群 */}
             <div className="bg-cyber-card border border-cyber-border clip-chamfer p-6 relative overflow-hidden">
