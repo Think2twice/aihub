@@ -454,6 +454,11 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
               <SiteAnnouncement />
             </div>
 
+            {/* 签到等级卡片（未登录时隐藏） */}
+            <div className="mb-6">
+              <SignInCard />
+            </div>
+
             {/* 内容列表 */}
             {currentShares.length === 0 ? (
               <div className="text-center py-16 bg-cyber-card border border-cyber-border clip-chamfer">
@@ -558,9 +563,6 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
 
           {/* 右侧边栏 */}
           <div className="w-full lg:w-80 space-y-6">
-            {/* 签到/等级 */}
-            <SignInCard />
-
             {/* 快速操作卡片 */}
             <div className="bg-cyber-card border border-cyber-border clip-chamfer p-6">
               <h3 className="font-orbitron font-bold text-cyber-foreground mb-4 uppercase tracking-wider text-sm">
