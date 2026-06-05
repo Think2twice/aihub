@@ -524,8 +524,6 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 </Link>
               </div>
             </div>
-              </div>
-            </div>
 
             {/* 搜索和排序工具栏 */}
             <div className="bg-cyber-card border border-cyber-border clip-chamfer p-4 mb-6">
