@@ -9,7 +9,8 @@ import {
   Loader2, AlertCircle, Search, Filter,
   ChevronLeft, ChevronRight, RefreshCw,
   ExternalLink, User, Users, Ban, RotateCcw,
-  Flag, Shield, Unlock, Info, Mail, Megaphone, Link2
+  Flag, Shield, Unlock, Info, Mail, Megaphone, Link2,
+  Code, HelpCircle
 } from 'lucide-react'
 import { getAvatarInitial } from '@/lib/utils'
 import AnnouncementManager from '@/components/AnnouncementManager'
@@ -133,12 +134,12 @@ export default function AdminPage() {
   const [shares, setShares] = useState<any[]>([])
   const [sharesLoading, setSharesLoading] = useState(true)
   const [shareStatusFilter, setShareStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'suspended'>('pending')
-  const [shareTypeFilter, setShareTypeFilter] = useState<'all' | 'tool' | 'life'>('all')
+  const [shareTypeFilter, setShareTypeFilter] = useState<'all' | 'tool' | 'life' | 'tech_share' | 'qa_help'>('all')
   const [shareSearch, setShareSearch] = useState('')
   const [sharePage, setSharePage] = useState(1)
   const [shareTotal, setShareTotal] = useState(0)
   const [shareTotalPages, setShareTotalPages] = useState(1)
-  const [shareStats, setShareStats] = useState({ pending: 0, approved: 0, rejected: 0, suspended: 0, total: 0, tool: 0, life: 0 })
+  const [shareStats, setShareStats] = useState({ pending: 0, approved: 0, rejected: 0, suspended: 0, total: 0, tool: 0, life: 0, tech: 0, qa: 0 })
   const [processingShare, setProcessingShare] = useState<number | null>(null)
   const [showShareModal, setShowShareModal] = useState<number | null>(null)
   const [shareReviewNote, setShareReviewNote] = useState('')
@@ -370,7 +371,7 @@ export default function AdminPage() {
         setShares(data.shares || [])
         setShareTotalPages(data.totalPages || 1)
         setShareTotal(data.total || 0)
-        setShareStats(data.stats || { pending: 0, approved: 0, rejected: 0, suspended: 0, total: 0, tool: 0, life: 0 })
+        setShareStats(data.stats || { pending: 0, approved: 0, rejected: 0, suspended: 0, total: 0, tool: 0, life: 0, tech: 0, qa: 0 })
       } else {
         console.error('获取分享列表失败:', data.error || res.statusText)
       }
@@ -1223,6 +1224,8 @@ export default function AdminPage() {
                 { label: '已下架', value: shareStats.suspended, color: 'purple', icon: Ban },
                 { label: '工具圈', value: shareStats.tool || 0, color: 'orange', icon: Wrench },
                 { label: '生活圈', value: shareStats.life || 0, color: 'green', icon: Share2 },
+                { label: '技术分享', value: shareStats.tech || 0, color: 'sky', icon: Code },
+                { label: '问答求助', value: shareStats.qa || 0, color: 'purple', icon: HelpCircle },
                 { label: '总计', value: shareStats.total, color: 'gray', icon: Share2 }
               ].map((stat) => (
                 <button
@@ -1277,17 +1280,17 @@ export default function AdminPage() {
                 {/* 类型筛选 */}
                 <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
                   <span className="text-sm text-gray-800">类型:</span>
-                  {(['all', 'tool', 'life'] as const).map((t) => (
+                  {(['all', 'tool', 'life', 'tech_share', 'qa_help'] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => { setShareTypeFilter(t); setSharePage(1) }}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         shareTypeFilter === t
-                          ? t === 'tool' ? 'bg-orange-100 text-orange-700' : t === 'life' ? 'bg-green-100 text-green-700' : 'bg-primary-100 text-primary-700'
+                          ? t === 'tool' ? 'bg-orange-100 text-orange-700' : t === 'life' ? 'bg-green-100 text-green-700' : t === 'tech_share' ? 'bg-sky-100 text-sky-700' : t === 'qa_help' ? 'bg-purple-100 text-purple-700' : 'bg-primary-100 text-primary-700'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       }`}
                     >
-                      {t === 'all' ? '全部' : t === 'tool' ? '工具圈' : '生活圈'}
+                      {t === 'all' ? '全部' : t === 'tool' ? '工具圈' : t === 'life' ? '生活圈' : t === 'tech_share' ? '技术分享' : '问答求助'}
                     </button>
                   ))}
                 </div>

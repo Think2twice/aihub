@@ -5,7 +5,7 @@ import { isBase64Image, getShareImageUrl } from '@/lib/share-image'
 
 // 允许的状态/类型白名单
 const ALLOWED_STATUS = ['pending', 'approved', 'rejected', 'suspended']
-const ALLOWED_TYPE = ['tool', 'life']
+const ALLOWED_TYPE = ['tool', 'life', 'tech_share', 'qa_help']
 
 // GET /api/admin/shares?status=&type=&page=&limit=&search=
 export async function GET(request: NextRequest) {
