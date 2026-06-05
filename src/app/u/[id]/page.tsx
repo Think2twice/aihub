@@ -7,11 +7,12 @@ import {
   User, MapPin, Link as LinkIcon, Calendar,
   Share2, Heart, MessageCircle, Grid,
   ArrowLeft, Loader2, Settings, ExternalLink,
-  Edit3, Users, X, ChevronRight
+  Edit3, Users, X, ChevronRight, Trophy
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Avatar from '@/components/Avatar'
+import AchievementWall from '@/components/AchievementWall'
 import { getShareImages } from '@/lib/share-image'
 
 interface UserProfileData {
@@ -76,11 +77,12 @@ export default function UserProfilePage() {
   const [followLoading, setFollowLoading] = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
+  const [achievementCount, setAchievementCount] = useState(0)
   
   // 用户内容
   const [shares, setShares] = useState<ShareItem[]>([])
   const [sharesLoading, setSharesLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'shares' | 'tools'>('shares')
+  const [activeTab, setActiveTab] = useState<'shares' | 'tools' | 'achievements'>('shares')
   
   // 错误状态
   const [error, setError] = useState<string | null>(null)
@@ -138,6 +140,11 @@ export default function UserProfilePage() {
       if (res.ok) {
         const data = await res.json()
         setProfile(data.user || data)
+        // 加载成就数量
+        fetch(`/api/user/achievements?userId=${userId}`)
+          .then(r => r.json())
+          .then(d => setAchievementCount(d.unlockedCount || 0))
+          .catch(() => {})
       } else {
         const err = await res.json()
         setError(err.error || '用户不存在')
@@ -361,6 +368,7 @@ export default function UserProfilePage() {
                   avatarUrl={profile.avatarUrl}
                   size="xxl"
                   isAI={false}
+                  badgeCount={achievementCount || undefined}
                 />
               </div>
 
@@ -528,6 +536,21 @@ export default function UserProfilePage() {
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neon-green" />
               )}
             </button>
+            <button
+              onClick={() => setActiveTab('achievements')}
+              className={`relative px-6 py-3.5 text-sm font-medium transition-colors font-mono ${
+                activeTab === 'achievements'
+                  ? 'text-neon-green'
+                  : 'text-cyber-muted-foreground hover:text-cyber-foreground'
+              }`}>
+              <span className="flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                成就 {achievementCount > 0 && `(${achievementCount})`}
+              </span>
+              {activeTab === 'achievements' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neon-green" />
+              )}
+            </button>
           </div>
 
           {/* 内容列表 */}
@@ -568,6 +591,12 @@ export default function UserProfilePage() {
                     <p className="text-cyber-muted-foreground font-mono">还没有提交过工具</p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'achievements' && (
+              <div className="py-6 px-4">
+                <AchievementWall userId={profile.id} />
               </div>
             )}
           </div>

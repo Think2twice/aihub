@@ -44,6 +44,8 @@ interface AvatarProps {
   className?: string
   /** 点击回调（覆盖默认跳转行为） */
   onClick?: () => void
+  /** 已解锁成就数量（>0 时在头像右下角显示成就徽章） */
+  badgeCount?: number
 }
 
 const sizeMap = {
@@ -65,6 +67,7 @@ export default function Avatar({
   isAI = false,
   className = '',
   onClick,
+  badgeCount,
 }: AvatarProps) {
   // 获取首字母，过滤掉数字和非字母字符
   const getInitial = (str: string): string => {
@@ -116,22 +119,35 @@ export default function Avatar({
     </div>
   )
 
-  // 带在线状态指示灯
-  const withOnline = showOnline ? (
-    <div className="relative">
+  // 带在线状态指示灯和成就徽章
+  const withIndicators = (
+    <div className="relative inline-flex">
       {avatarContent}
-      <div
-        className={`absolute -bottom-0.5 -right-0.5 ${s.online} bg-[#00ff88] ${s.onlineBorder} border-[#12121a]`}
-        style={{ clipPath: `polygon(0 0, calc(100% - 1px) 0, 100% 1px, 100% 100%, 1px 100%, 0 calc(100% - 1px))` }}
-      />
+      {showOnline && (
+        <div
+          className={`absolute -bottom-0.5 -right-0.5 ${s.online} bg-[#00ff88] ${s.onlineBorder} border-[#12121a] z-10`}
+          style={{ clipPath: `polygon(0 0, calc(100% - 1px) 0, 100% 1px, 100% 100%, 1px 100%, 0 calc(100% - 1px))` }}
+        />
+      )}
+      {badgeCount !== undefined && badgeCount > 0 && size !== 'xs' && (
+        <div
+          className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 flex items-center justify-center gap-0.5 px-1.5 bg-neon-green text-[#0a0a0f] text-[10px] font-bold font-mono z-20 shadow-[0_0_6px_rgba(0,255,136,0.5)]"
+          style={{ clipPath: 'polygon(0 2px, 2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px))' }}
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          <span>{badgeCount}</span>
+        </div>
+      )}
     </div>
-  ) : avatarContent
+  )
 
   // 可点击跳转
   if (onClick) {
     return (
       <div className="cursor-pointer" onClick={onClick}>
-        {withOnline}
+        {withIndicators}
       </div>
     )
   }
@@ -139,10 +155,10 @@ export default function Avatar({
   if (linkable && userId) {
     return (
       <Link href={`/u/${userId}`} className="inline-block">
-        {withOnline}
+        {withIndicators}
       </Link>
     )
   }
 
-  return withOnline
+  return withIndicators
 }

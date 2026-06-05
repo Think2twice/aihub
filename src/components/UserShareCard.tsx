@@ -101,6 +101,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [visibleCount, setVisibleCount] = useState(5)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [achievementCount, setAchievementCount] = useState(0)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
   const commentInputRef = useRef<HTMLTextAreaElement>(null)
@@ -339,6 +340,18 @@ export default function UserShareCard({ share }: UserShareCardProps) {
       if (data.likes !== undefined) setLikeCount(data.likes)
     }).catch(() => {})
   }
+
+  // 获取用户的成就数量
+  useEffect(() => {
+    const uid = typeof user?.id === 'number' ? user.id : parseInt(user?.id)
+    if (!uid) return
+    fetch(`/api/user/achievements?userId=${uid}`)
+      .then(r => r.json())
+      .then(data => {
+        setAchievementCount(data.unlockedCount || 0)
+      })
+      .catch(() => {})
+  }, [user?.id])
 
   // 收藏分享
   const handleFavorite = () => {
@@ -680,6 +693,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
             linkable
             showOnline
             isAI={isAIUser(user.username)}
+            badgeCount={achievementCount || undefined}
           />
           
           <div className="flex-1 min-w-0">
