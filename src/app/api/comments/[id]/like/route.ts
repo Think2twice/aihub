@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canLike, incrementLikeCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
+import { addExp } from '@/lib/add-exp'
+import { EXP_RULES } from '@/lib/level'
 
 // POST /api/comments/[id]/like - 点赞/取消点赞评论
 export async function POST(
@@ -57,6 +59,8 @@ export async function POST(
         link: `/user-share`,
         relatedUserId: Number(userId),
       }).catch(() => {})
+      // 评论获赞加经验
+      addExp(Number(commentOwnerId), EXP_RULES.GET_LIKE_ON_COMMENT).catch(() => {})
     }
 
     // 获取更新后的点赞数

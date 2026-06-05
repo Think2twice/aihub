@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canLike, incrementLikeCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
+import { addExp } from '@/lib/add-exp'
+import { EXP_RULES } from '@/lib/level'
 
 // GET /api/user/likes?userId=xxx
 export async function GET(request: NextRequest) {
@@ -92,6 +94,7 @@ export async function POST(request: NextRequest) {
         )
         const ownerId = (share as any[])[0]?.userId
         if (ownerId && Number(ownerId) !== Number(userId)) {
+          // 点赞通知
           createNotification({
             userId: ownerId,
             type: 'like',
@@ -100,6 +103,8 @@ export async function POST(request: NextRequest) {
             link: `/share/${shareId}`,
             relatedUserId: Number(userId),
           }).catch(() => {})
+          // 点赞加经验（给被赞的人）
+          addExp(Number(ownerId), EXP_RULES.GET_LIKE_ON_SHARE).catch(() => {})
         }
       } catch (e) {
         console.error('点赞通知失败:', e)

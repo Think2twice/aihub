@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdmin } from '@/lib/auth'
+import { addExp } from '@/lib/add-exp'
+import { EXP_RULES } from '@/lib/level'
 
 // POST /api/admin/shares/[id]/review  审核分享/下架/恢复
 export async function POST(
@@ -41,6 +43,11 @@ export async function POST(
       where: { id: shareId },
       data: updateData
     })
+
+    // 审核通过时给分享作者加经验
+    if (action === 'approve') {
+      addExp(share.userId, EXP_RULES.CREATE_SHARE).catch(() => {})
+    }
 
     return NextResponse.json({ share })
   } catch (error) {

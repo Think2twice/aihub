@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canComment, incrementCommentCount } from '@/lib/daily-limit'
 import { createNotification } from '@/lib/notification'
+import { addExp } from '@/lib/add-exp'
+import { EXP_RULES } from '@/lib/level'
 
 // GET /api/tools/[id]/comments - 获取工具的评论列表
 export async function GET(
@@ -107,6 +109,8 @@ export async function POST(
 
     // 增加用户评论次数
     await incrementCommentCount(userId)
+    // 评论加经验
+    addExp(Number(userId), EXP_RULES.CREATE_COMMENT).catch(() => {})
 
     // 通知管理员有新工具评论（异步，不阻塞主流程）
     try {
