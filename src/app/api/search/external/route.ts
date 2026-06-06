@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
           text: page.extract?.replace(/<\/?[^>]+>/g, '').trim() || searchResults[0].snippet?.replace(/<\/?[^>]+>/g, '') || '',
           source: 'Wikipedia',
           url: `https://zh.wikipedia.org/wiki/${encodeURIComponent(page.title)}`,
-          image: page.thumbnail?.source || null,
+          image: page.thumbnail?.source ? (page.thumbnail.source.startsWith('//') ? 'https:' + page.thumbnail.source : page.thumbnail.source) : null,
         }
       }
 
