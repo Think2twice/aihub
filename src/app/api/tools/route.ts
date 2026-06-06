@@ -87,10 +87,10 @@ export async function POST(request: NextRequest) {
       pricingType,
       githubUrl,
       logoUrl,
-      images,
       userId,
       tags 
     } = body
+    let images: string[] | null = body.images
 
     // 验证必填字段
     if (!name?.trim()) {
