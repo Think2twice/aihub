@@ -409,12 +409,15 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             {validTab === 'trending' && (data as any[]).map((item: any, index: number) => {
               const todayViews = Number(item.todayViews || 0)
               const weekAgoViews = Number(item.weekAgoViews || 0)
+              const yesterdayViews = Number(item.yesterdayViews || 0)
               let growth = 0
               if (weekAgoViews > 0 && todayViews > 0) {
                 growth = Math.round((todayViews - weekAgoViews) / weekAgoViews * 100)
               } else if (todayViews > 0 && weekAgoViews === 0 && item.weekAgoViews !== null) {
                 // 7天前是0但今天有 - 从无到有
                 growth = 999
+              } else if (yesterdayViews > 0 && todayViews > 0) {
+                growth = Math.round((todayViews - yesterdayViews) / yesterdayViews * 100)
               }
               
               return (
