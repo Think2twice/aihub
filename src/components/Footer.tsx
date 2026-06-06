@@ -77,6 +77,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm font-mono">
               <li><Link href="/tools" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">AI工具</Link></li>
               <li><Link href="/news" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">AI资讯</Link></li>
+              <li><Link href="/leaderboard" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">排行榜</Link></li>
+              <li><Link href="/user-share" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">用户分享</Link></li>
               <li><Link href="/trending" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">趋势榜</Link></li>
               <li><Link href="/opensource" className="text-cyber-muted-foreground hover:text-neon-green transition-colors">开源项目</Link></li>
             </ul>
