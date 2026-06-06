@@ -109,12 +109,16 @@ export default async function HomePage() {
     take: 4,
   })
 
-  // 统计数据
-  const totalTools = await prisma.tool.count({ where: { isActive: true } })
-  const totalOpensource = await prisma.tool.count({ 
-    where: { isActive: true, isOpenSource: true } 
-  })
-  const totalCategories = await prisma.category.count()
+  // 统计数据 — 单次查询获取所有计数
+  const counts = await prisma.$queryRawUnsafe<Array<any>>(`
+    SELECT
+      (SELECT COUNT(*) FROM tools WHERE "isActive" = true) as "totalTools",
+      (SELECT COUNT(*) FROM tools WHERE "isActive" = true AND "isOpenSource" = true) as "totalOpensource",
+      (SELECT COUNT(*) FROM categories) as "totalCategories"
+  `)
+  const totalTools = Number(counts[0]?.totalTools || 0)
+  const totalOpensource = Number(counts[0]?.totalOpensource || 0)
+  const totalCategories = Number(counts[0]?.totalCategories || 0)
 
   // 各分类工具数量
   const categoryCounts = await prisma.tool.groupBy({
@@ -138,7 +142,7 @@ export default async function HomePage() {
   // 获取热门话题标签（从最新分享中提取）
   const recentTags = await prisma.$queryRawUnsafe<Array<{ tags: string }>>(`
     SELECT tags FROM shares WHERE status = 'approved' AND tags IS NOT NULL AND tags != ''
-    ORDER BY "createdAt" DESC LIMIT 50
+    ORDER BY "createdAt" DESC LIMIT 20
   `)
   const tagCounts = new Map<string, number>()
   recentTags.forEach((row: any) => {

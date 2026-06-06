@@ -29,9 +29,6 @@ export default async function ToolsPage({
   const source = params.source as string | undefined
   const sort = params.sort as string | undefined
   const page = parseInt(params.page as string || '1', 10)
-  
-  console.log('[ToolsPage] searchParams:', params)
-  console.log('[ToolsPage] search:', search)
 
   let totalItems: number
   let tools: any[]
