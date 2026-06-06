@@ -151,6 +151,7 @@ export default function Navbar() {
   const [externalQuery, setExternalQuery] = useState('')
   const [user, setUser] = useState<UserData | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [toast, setToast] = useState<string | null>(null)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -255,9 +256,13 @@ export default function Navbar() {
     if (q) {
       // 未登录不能搜索（站内和全网都需要登录）
       if (!user) {
-        router.push('/login?redirect=' + encodeURIComponent(pathname))
+        setToast('请先登录后再使用搜索功能')
         setIsSearchOpen(false)
         setSearchQuery('')
+        setTimeout(() => {
+          setToast(null)
+          router.push('/login?redirect=' + encodeURIComponent(pathname))
+        }, 1500)
         return
       }
       if (searchMode === 'web') {
@@ -723,6 +728,16 @@ export default function Navbar() {
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowExternal(false)} />
           <ExternalSearch initialQuery={externalQuery} onClose={() => setShowExternal(false)} />
+        </div>
+      )}
+
+      {/* Toast 提示 */}
+      {toast && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-red-500/90 text-white px-6 py-3 clip-chamfer-sm shadow-[0_0_20px_rgba(255,51,102,0.3)] font-mono text-sm flex items-center gap-2 border border-red-400/30">
+            <span>⚠</span>
+            {toast}
+          </div>
         </div>
       )}
     </>
