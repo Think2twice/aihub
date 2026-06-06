@@ -16,13 +16,20 @@ export default function ToolsSearchBar() {
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('search') || '')
   const [sortOpen, setSortOpen] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // 挂载时拦截：URL 有 search 但未登录 → 跳登录页
+  // 显示提示并自动消失
+  const showToast = (msg: string) => {
+    setToast(msg)
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  // 挂载时拦截：URL 有 search 但未登录 → 提示后跳登录页
   useEffect(() => {
     if (searchParams.get('search') && !localStorage.getItem('user')) {
-      alert('请先登录后再使用搜索功能')
-      router.replace('/login?redirect=/tools')
+      showToast('请先登录后再使用搜索功能')
+      setTimeout(() => router.replace('/login?redirect=/tools'), 1500)
     }
   }, [])
 
@@ -63,7 +70,7 @@ export default function ToolsSearchBar() {
 
   const handleSearch = () => {
     if (!localStorage.getItem('user')) {
-      alert('请先登录后再使用搜索功能')
+      showToast('请先登录后再使用搜索功能')
       router.push('/login?redirect=/tools')
       return
     }
@@ -89,6 +96,7 @@ export default function ToolsSearchBar() {
   const currentLabel = sortOptions.find(o => o.value === currentSort)?.label || '排序'
 
   return (
+    <>
     <div className="flex gap-4 items-center">
       <div className="flex-1 relative">
         <Search
@@ -140,5 +148,16 @@ export default function ToolsSearchBar() {
         )}
       </div>
     </div>
+
+    {/* Toast 提示 */}
+    {toast && (
+      <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="bg-red-500/90 text-white px-6 py-3 clip-chamfer-sm shadow-[0_0_20px_rgba(255,51,102,0.3)] font-mono text-sm flex items-center gap-2 border border-red-400/30">
+          <span>⚠</span>
+          {toast}
+        </div>
+      </div>
+    )}
+    </>
   )
 }
