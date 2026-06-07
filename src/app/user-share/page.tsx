@@ -708,17 +708,11 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
             )}
             
             {currentShares.length > 0 && (
-              <div className="text-center py-8">
-                {currentShares.length >= (stats[`${tab}Count`] || 0) ? (
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-cyber-card border border-cyber-border clip-chamfer text-cyber-muted-foreground text-sm font-mono">
-                  <span>已经到底了</span>
-                  <span className="w-1 h-1 bg-cyber-muted-foreground rounded-full"></span>
-                  <span>共 {currentShares.length} 条</span>
-                </div>
-                ) : (
-                  <ShareLoadMore initialTab={tab} initialSkip={currentShares.length} />
-                )}
-              </div>
+              <ShareLoadMore 
+                initialTab={tab} 
+                initialSkip={currentShares.length} 
+                totalCount={stats[`${tab}Count`] || 0} 
+              />
             )}
           </div>
 
