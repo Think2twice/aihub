@@ -8,6 +8,7 @@ import UserShareCard from '@/components/UserShareCard'
 import SharePageClient from './SharePageClient'
 import LiveShareStats from './LiveShareStats'
 import SiteAnnouncement from '@/components/SiteAnnouncement'
+import ShareLoadMore from '@/components/ShareLoadMore'
 import SignInCard from '@/components/SignInCard'
 import { 
   TrendingUp, 
@@ -91,7 +92,7 @@ async function getToolShares(sort?: string, search?: string) {
     orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
       ? { likes: 'desc' }
       : { createdAt: 'desc' }],
-    take: 999
+    take: 24
   })
 
   // 转换格式以兼容原有代码
@@ -185,7 +186,7 @@ async function getLifeShares(sort?: string, search?: string) {
     orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
       ? { likes: 'desc' }
       : { createdAt: 'desc' }],
-    take: 999
+    take: 24
   })
 
   // 转换格式以兼容原有代码
@@ -245,7 +246,7 @@ async function getTechShares(sort?: string, search?: string) {
     orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
       ? { likes: 'desc' }
       : { createdAt: 'desc' }],
-    take: 999
+    take: 24
   })
 
   const now = new Date()
@@ -304,7 +305,7 @@ async function getQaHelpShares(sort?: string, search?: string) {
     orderBy: [{ user: { role: 'desc' } }, sort === 'hot' || sort === 'mostLiked'
       ? { likes: 'desc' }
       : { createdAt: 'desc' }],
-    take: 999
+    take: 24
   })
 
   const now = new Date()
@@ -706,13 +707,17 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
               </div>
             )}
             
-            {currentShares.length > 0 && currentShares.length >= (stats[`${tab}Count`] || 999) && (
+            {currentShares.length > 0 && (
               <div className="text-center py-8">
+                {currentShares.length >= (stats[`${tab}Count`] || 0) ? (
                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-cyber-card border border-cyber-border clip-chamfer text-cyber-muted-foreground text-sm font-mono">
                   <span>已经到底了</span>
                   <span className="w-1 h-1 bg-cyber-muted-foreground rounded-full"></span>
                   <span>共 {currentShares.length} 条</span>
                 </div>
+                ) : (
+                  <LoadMore initialTab={tab} initialSkip={currentShares.length} />
+                )}
               </div>
             )}
           </div>
