@@ -96,7 +96,9 @@ export async function POST(request: NextRequest) {
     }
 
     const code = generateCode()
-    console.log(`[SendCode] 验证码: ${code} -> ${email}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[SendCode] 验证码: ${code} -> ${email}`)
+    }
 
     // 保存验证码到数据库（5分钟有效）
     await saveVerificationCode(email, code)
