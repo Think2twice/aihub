@@ -5,6 +5,19 @@ import { Clock, Github, MessageSquare, ArrowUpRight, Sparkles, Shield, Zap, Bug,
 
 const updates = [
   {
+    date: '2026-06-07',
+    title: '用户分享分页 & 社区体验优化',
+    icon: Sparkles,
+    color: 'text-neon-cyan',
+    items: [
+      '📄 用户分享4个分类统一改为页码导航（支持 ?page=N）',
+      '🎨 加载更多卡片改用 UserShareCard，样式与初始卡片一致',
+      '🏷️ Tab 徽标改为显示分类总数量，不受分页影响',
+      '🔧 修复技术/问答tab加载更多拿到全部类型的bug',
+      '⚡ 后台今日新增统计修复（新版查询别名问题）',
+    ]
+  },
+  {
     date: '2026-06-06',
     title: '全网搜索 & 额度优化',
     icon: Sparkles,
