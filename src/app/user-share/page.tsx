@@ -495,7 +495,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                   <Wrench className="w-4 h-4" />
                   工具圈
                   <span className={`ml-1 px-2 py-0.5 clip-chamfer-sm text-xs ${tab === 'tool' ? 'bg-cyber-background/20' : 'bg-cyber-muted'}`}>
-                    {toolShares.length}
+                    {stats.toolCount}
                   </span>
                 </Link>
                 <Link 
@@ -509,7 +509,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                   <Sparkles className="w-4 h-4" />
                   生活圈
                   <span className={`ml-1 px-2 py-0.5 clip-chamfer-sm text-xs ${tab === 'life' ? 'bg-cyber-background/20' : 'bg-cyber-muted'}`}>
-                    {lifeShares.length}
+                    {stats.lifeCount}
                   </span>
                 </Link>
                 <Link 
@@ -523,7 +523,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                   <Code className="w-4 h-4" />
                   技术分享
                   <span className={`ml-1 px-2 py-0.5 clip-chamfer-sm text-xs ${tab === 'tech' ? 'bg-cyber-background/20' : 'bg-cyber-muted'}`}>
-                    {techShares.length}
+                    {stats.techCount}
                   </span>
                 </Link>
                 <Link 
@@ -537,7 +537,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                   <HelpCircle className="w-4 h-4" />
                   问答求助
                   <span className={`ml-1 px-2 py-0.5 clip-chamfer-sm text-xs ${tab === 'qa' ? 'bg-cyber-background/20' : 'bg-cyber-muted'}`}>
-                    {qaShares.length}
+                    {stats.qaCount}
                   </span>
                 </Link>
               </div>
