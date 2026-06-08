@@ -480,7 +480,7 @@ export default function UserCenterPage() {
     if (!uid) return
     setSubmittedToolsLoading(true)
     try {
-      const res = await fetch(`/api/user/tools?userId=${uid}&page=${page}&limit=12`, {
+      const res = await fetch(`/api/user/tools?userId=${uid}&page=1&limit=200`, {
         cache: 'no-store'
       })
       if (res.ok) {
