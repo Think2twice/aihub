@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     'language': 'zh-CN',
     'og:locale:alternate': 'en_US',
     'msthumbnail': 'https://ai999999.top/favicon-32x32.png',
+    'yandex-verification': '197b4256a9dea8f9',
   },
 }
 
