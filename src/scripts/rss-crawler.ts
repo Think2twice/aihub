@@ -84,29 +84,19 @@ async function translateWithLocalModel(text: string): Promise<string> {
   }
 }
 
-// AI 资讯 RSS 源列表
+// AI 资讯 RSS 源列表（精选有实质内容的源）
 const rssSources = [
+  // === 中文源 ===
   {
     name: '量子位',
     url: 'https://www.qbitai.com/rss',
     language: 'zh',
     category: 'AI新闻'
   },
-  {
-    name: 'MIT Technology Review',
-    url: 'https://www.technologyreview.com/feed/',
-    language: 'en',
-    category: '科技新闻'
-  },
+  // === 英文源（自动翻译）===
   {
     name: 'MarkTechPost',
     url: 'https://www.marktechpost.com/feed/',
-    language: 'en',
-    category: 'AI新闻'
-  },
-  {
-    name: 'AI News',
-    url: 'https://www.artificialintelligence-news.com/feed/',
     language: 'en',
     category: 'AI新闻'
   },
@@ -117,26 +107,26 @@ const rssSources = [
     category: 'AI新闻'
   },
   {
-    name: 'Ars Technica',
+    name: 'Ars Technica AI',
     url: 'https://arstechnica.com/tag/artificial-intelligence/feed/',
     language: 'en',
     category: '科技新闻'
   },
   {
-    name: 'IEEE Spectrum',
-    url: 'https://spectrum.ieee.org/rss/topic/artificial-intelligence',
+    name: 'The Verge AI',
+    url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml',
+    language: 'en',
+    category: '科技新闻'
+  },
+  {
+    name: 'OpenAI Blog',
+    url: 'https://openai.com/news/rss.xml',
     language: 'en',
     category: '技术博客'
   },
   {
-    name: 'Nature Machine Intelligence',
-    url: 'https://www.nature.com/natmachintell.rss',
-    language: 'en',
-    category: 'AI论文'
-  },
-  {
-    name: 'OpenAI Blog',
-    url: 'https://openai.com/blog/rss.xml',
+    name: 'Google AI Blog',
+    url: 'https://blog.google/technology/ai/rss/',
     language: 'en',
     category: '技术博客'
   },
@@ -145,7 +135,25 @@ const rssSources = [
     url: 'https://huggingface.co/blog/feed.xml',
     language: 'en',
     category: '技术博客'
-  }
+  },
+  {
+    name: 'The Gradient',
+    url: 'https://thegradient.pub/rss/',
+    language: 'en',
+    category: '深度分析'
+  },
+  {
+    name: 'Ahead of AI',
+    url: 'https://magazine.sebastianraschka.com/feed',
+    language: 'en',
+    category: '技术博客'
+  },
+  {
+    name: 'Last Week in AI',
+    url: 'https://lastweekin.ai/feed',
+    language: 'en',
+    category: 'AI新闻'
+  },
 ]
 
 // 生成唯一 slug
