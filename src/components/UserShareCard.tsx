@@ -806,7 +806,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
         
         {/* 分享内容 */}
         <div className="mt-3">
-          <p className="text-[#e0e0e0] text-[15px] leading-relaxed whitespace-pre-wrap font-mono">
+          <p className="text-[#e0e0e0] text-[15px] leading-relaxed whitespace-pre-wrap break-words font-mono">
             {share.content}
           </p>
         </div>
@@ -1190,7 +1190,7 @@ export default function UserShareCard({ share }: UserShareCardProps) {
                         </div>
                         
                         {/* 评论内容 */}
-                        <div className="text-sm text-[#e0e0e0] leading-relaxed font-mono">
+                        <div className="text-sm text-[#e0e0e0] leading-relaxed break-words font-mono">
                           {item.replyTo ? (
                             <span>
                               回复 <span className="text-[#00ff88] font-semibold">@{item.replyTo.name}</span>：{item.content}
