@@ -70,10 +70,10 @@ export default function SiteAnnouncement() {
         </span>
 
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className={`transition-all duration-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+          <div className={`min-w-0 transition-all duration-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
             <div className="flex items-center gap-2">
               <Terminal className="w-3.5 h-3.5 text-neon-green/50 flex-shrink-0" />
-              <span className="text-sm text-cyber-foreground font-mono truncate">{item.text}</span>
+              <span className="text-sm text-cyber-foreground font-mono truncate block" title={item.text}>{item.text}</span>
             </div>
           </div>
         </div>
