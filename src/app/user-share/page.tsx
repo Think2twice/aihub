@@ -479,23 +479,95 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* 主布局：左侧广告 + 中间内容 + 右侧边栏 */}
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* 左侧推广区域 */}
+          {/* 左侧推广区域 — 赛博朋克风格广告栏 */}
           <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 space-y-4">
               <a
                 href="https://hero-sms.com/?ref=1256299"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-cyber-card border border-neon-cyan/30 clip-chamfer p-4 relative overflow-hidden group hover:border-neon-cyan transition-colors"
+                className="block clip-chamfer relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/5 to-transparent" />
-                <div className="relative">
-                  <span className="text-xs px-2 py-0.5 bg-neon-cyan/20 text-neon-cyan font-mono border border-neon-cyan/30 inline-block mb-2" 
-                    style={{clipPath: 'polygon(0 3px, 3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px))'}}>
-                    推广
-                  </span>
-                  <h4 className="font-orbitron font-bold text-cyber-foreground text-sm mb-1">HeroSMS</h4>
-                  <p className="text-xs text-cyber-muted-foreground font-mono leading-relaxed">全球虚拟号码接码，注册海外服务必备</p>
+                {/* 外层流光边框 */}
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-neon-cyan via-neon-magenta to-neon-cyan opacity-40 group-hover:opacity-80 transition-opacity duration-700 blur-[2px] rounded-none"
+                  style={{clipPath: 'polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px))'}}
+                />
+
+                {/* 卡片主体 */}
+                <div className="relative bg-cyber-card clip-chamfer p-0 overflow-hidden border border-transparent">
+                  {/* 背景网格纹路 */}
+                  <div className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                      backgroundImage: 'linear-gradient(#00ff88 1px, transparent 1px), linear-gradient(90deg, #00ff88 1px, transparent 1px)',
+                      backgroundSize: '20px 20px',
+                    }}
+                  />
+                  
+                  {/* 扫描线动效 */}
+                  <div className="absolute inset-0 opacity-[0.04] animate-scanline pointer-events-none"
+                    style={{
+                      background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #00ff88 2px, #00ff88 4px)',
+                      backgroundSize: '100% 4px',
+                    }}
+                  />
+
+                  {/* 顶部发光装饰线 */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+
+                  {/* 右上角几何装饰 */}
+                  <div className="absolute -top-3 -right-3 w-16 h-16 border border-neon-cyan/10 rotate-45 group-hover:border-neon-cyan/30 transition-colors" />
+
+                  {/* 内容区 */}
+                  <div className="relative p-5">
+                    {/* 「推广」标签 — 带闪烁效果 */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-neon-cyan/10 text-neon-cyan font-tech text-[10px] uppercase tracking-[2px] border border-neon-cyan/30 animate-flicker"
+                        style={{clipPath: 'polygon(0 3px, 3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px))'}}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-pulse-neon" />
+                        推广
+                      </span>
+                    </div>
+
+                    {/* 标题 */}
+                    <h4 className="font-orbitron font-bold text-lg text-cyber-foreground mb-1 group-hover:text-neon-cyan transition-colors duration-300">
+                      Hero<span className="text-neon-cyan">SMS</span>
+                    </h4>
+
+                    {/* 描述 */}
+                    <p className="text-xs text-cyber-muted-foreground/80 font-mono leading-relaxed mb-4">
+                      全球虚拟号码接码，<br />
+                      <span className="text-neon-cyan/70">注册海外服务</span>必备
+                    </p>
+
+                    {/* 分隔线 */}
+                    <div className="border-t border-neon-cyan/10 mb-3" />
+
+                    {/* 特点列表 */}
+                    <div className="space-y-1.5 mb-4">
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-cyber-muted-foreground/60">
+                        <span className="text-neon-green text-xs">▸</span>
+                        <span>支持 OpenAI / Telegram</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-cyber-muted-foreground/60">
+                        <span className="text-neon-cyan text-xs">▸</span>
+                        <span>稳定快速 · 价格低廉</span>
+                      </div>
+                    </div>
+
+                    {/* CTA 按钮 */}
+                    <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-wider text-neon-cyan group-hover:text-neon-green transition-colors duration-300">
+                      <span>立即体验</span>
+                      <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+
+                    {/* 左下角装饰角标 */}
+                    <div className="absolute bottom-2 left-2 text-[8px] font-tech text-cyber-muted-foreground/20 tracking-[3px] uppercase">
+                      AD
+                    </div>
+                  </div>
                 </div>
               </a>
             </div>
