@@ -20,7 +20,6 @@ export default function SiteAnnouncement() {
   const [list, setList] = useState<AnnouncementItem[]>([])
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     fetch('/api/announcements')
@@ -35,11 +34,7 @@ export default function SiteAnnouncement() {
   useEffect(() => {
     if (paused || list.length <= 1) return
     const timer = setInterval(() => {
-      setVisible(false)
-      setTimeout(() => {
-        setCurrent(prev => (prev + 1) % list.length)
-        setVisible(true)
-      }, 300)
+      setCurrent(prev => (prev + 1) % list.length)
     }, 4000)
     return () => clearInterval(timer)
   }, [paused, list.length])
@@ -70,11 +65,9 @@ export default function SiteAnnouncement() {
         </span>
 
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className={`min-w-0 transition-all duration-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-            <div className="flex items-center gap-2">
-              <Terminal className="w-3.5 h-3.5 text-neon-green/50 flex-shrink-0" />
-              <span className="text-sm text-cyber-foreground font-mono truncate block" title={item.text}>{item.text}</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Terminal className="w-3.5 h-3.5 text-neon-green/50 flex-shrink-0" />
+            <span className="text-sm text-cyber-foreground font-mono truncate block" title={item.text}>{item.text}</span>
           </div>
         </div>
 
@@ -82,7 +75,7 @@ export default function SiteAnnouncement() {
           {list.map((_, i) => (
             <button
               key={i}
-              onClick={() => { setVisible(false); setTimeout(() => { setCurrent(i); setVisible(true) }, 300) }}
+              onClick={() => setCurrent(i)}
               title={`切换到第 ${i+1} 条公告`}
               className={`transition-all duration-300 cursor-pointer w-5 h-5 flex items-center justify-center rounded-sm ${
                 i === current
