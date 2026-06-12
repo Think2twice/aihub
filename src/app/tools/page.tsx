@@ -15,8 +15,8 @@ export const metadata = {
   description: '浏览超过800个AI工具，涵盖聊天对话、图像生成、代码助手等16个分类，找到最适合你的AI工具。',
 }
 
-// ISR: 每5分钟重新生成页面（节省数据库带宽）
-export const revalidate = 3600
+// ISR: 每2小时重新生成页面（节省Vercel额度）
+export const revalidate = 7200
 
 export default async function ToolsPage({
   searchParams,

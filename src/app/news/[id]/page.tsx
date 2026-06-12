@@ -8,7 +8,7 @@ import { formatDate } from '@/lib/utils'
 import SubscribeCard from '@/components/SubscribeCard'
 import type { Metadata } from 'next'
 
-export const revalidate = 3600
+export const revalidate = 7200
 
 
 interface NewsDetailPageProps {
