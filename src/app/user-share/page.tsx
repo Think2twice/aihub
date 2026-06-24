@@ -481,7 +481,7 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
         <div className="flex flex-col lg:flex-row gap-6">
           {/* 左侧推广 - 简洁卡片 */}
           <div className="hidden lg:block w-56 flex-shrink-0">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-3">
               <a
                 href="https://hero-sms.com/?ref=1256299"
                 target="_blank"
@@ -493,6 +493,23 @@ export default async function UserSharePage({ searchParams }: UserSharePageProps
                 <div className="text-sm font-bold text-cyber-foreground mb-1">HeroSMS</div>
                 <div className="text-xs text-cyber-muted-foreground font-mono leading-relaxed mb-3">
                   虚拟号码接码 · 注册海外服务必备
+                </div>
+                <div className="flex items-center gap-1 text-xs text-neon-cyan font-mono">
+                  立即体验 <span className="inline-block">→</span>
+                </div>
+              </a>
+
+              <a
+                href="https://bewild.ai?code=9JY5HSYX"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-[#12121a] border border-[#2a2a3a] hover:border-neon-cyan/50 transition-colors p-4"
+                style={{clipPath: 'polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px))'}}
+              >
+                <div className="text-xs text-neon-cyan/70 font-mono mb-2">推广</div>
+                <div className="text-sm font-bold text-cyber-foreground mb-1">海外AI充值平台</div>
+                <div className="text-xs text-cyber-muted-foreground font-mono leading-relaxed mb-3">
+                  ChatGPT/Claude 代充值 · 快捷稳定
                 </div>
                 <div className="flex items-center gap-1 text-xs text-neon-cyan font-mono">
                   立即体验 <span className="inline-block">→</span>
