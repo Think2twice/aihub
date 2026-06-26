@@ -2355,7 +2355,7 @@ function StatsCards() {
       }
     }
     fetchStats()
-    const interval = setInterval(fetchStats, 900000) // 每15分钟轮询（省CPU）
+    const interval = setInterval(fetchStats, 1800000) // 每30分钟轮询（极限省CPU）
     return () => clearInterval(interval)
   }, [])
 

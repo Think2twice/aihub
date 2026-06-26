@@ -16,7 +16,7 @@ export const metadata = {
 }
 
 // ISR: 每2小时重新生成页面（节省Vercel额度）
-export const revalidate = 7200
+export const revalidate = 14400
 
 export default async function ToolsPage({
   searchParams,

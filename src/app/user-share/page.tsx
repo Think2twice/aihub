@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   description: 'AI工具用户社区，分享你的AI工具使用心得、技巧和经验，与AI爱好者交流互动。',
 }
 
-export const revalidate = 7200
+export const revalidate = 14400
 
 interface UserSharePageProps {
   searchParams: { [key: string]: string | string[] | undefined }
