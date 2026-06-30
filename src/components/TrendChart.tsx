@@ -50,8 +50,8 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
   const calculateTrend = () => {
     if (data.length < 2) return { direction: 'flat', percentage: 0 }
     
-    const first = data[0].upvotes
-    const last = data[data.length - 1].upvotes
+    const first = data[0].viewCount
+    const last = data[data.length - 1].viewCount
     const change = last - first
     const percentage = first > 0 ? (change / first) * 100 : 0
     
@@ -65,9 +65,9 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
   const generatePath = () => {
     if (data.length === 0) return ''
     
-    const maxUpvotes = Math.max(...data.map(d => d.upvotes))
-    const minUpvotes = Math.min(...data.map(d => d.upvotes))
-    const range = maxUpvotes - minUpvotes || 1
+    const maxViews = Math.max(...data.map(d => d.viewCount))
+    const minViews = Math.min(...data.map(d => d.viewCount))
+    const range = maxViews - minViews || 1
     
     const width = 400
     const height = 120
@@ -75,7 +75,7 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
     
     const points = data.map((d, i) => {
       const x = (i / (data.length - 1)) * (width - padding * 2) + padding
-      const y = height - padding - ((d.upvotes - minUpvotes) / range) * (height - padding * 2)
+      const y = height - padding - ((d.viewCount - minViews) / range) * (height - padding * 2)
       return `${x},${y}`
     })
     
@@ -86,9 +86,9 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
   const generateAreaPath = () => {
     if (data.length === 0) return ''
     
-    const maxUpvotes = Math.max(...data.map(d => d.upvotes))
-    const minUpvotes = Math.min(...data.map(d => d.upvotes))
-    const range = maxUpvotes - minUpvotes || 1
+    const maxViews = Math.max(...data.map(d => d.viewCount))
+    const minViews = Math.min(...data.map(d => d.viewCount))
+    const range = maxViews - minViews || 1
     
     const width = 400
     const height = 120
@@ -96,7 +96,7 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
     
     const points = data.map((d, i) => {
       const x = (i / (data.length - 1)) * (width - padding * 2) + padding
-      const y = height - padding - ((d.upvotes - minUpvotes) / range) * (height - padding * 2)
+      const y = height - padding - ((d.viewCount - minViews) / range) * (height - padding * 2)
       return `${x},${y}`
     })
     
@@ -172,7 +172,7 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
                   </span>
                 </div>
                 <div className="text-sm text-cyber-muted-foreground font-mono">
-                  当前热度: <span className="text-neon-magenta font-bold">{data[data.length - 1]?.upvotes?.toLocaleString() || 0}</span>
+                  当前热度: <span className="text-neon-magenta font-bold">{data[data.length - 1]?.viewCount?.toLocaleString() || 0}</span>
                 </div>
               </div>
 
@@ -231,11 +231,11 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
 
                   {/* Data points */}
                   {data.map((d, i) => {
-                    const maxUpvotes = Math.max(...data.map(d => d.upvotes))
-                    const minUpvotes = Math.min(...data.map(d => d.upvotes))
-                    const range = maxUpvotes - minUpvotes || 1
+                    const maxViews = Math.max(...data.map(d => d.viewCount))
+                    const minViews = Math.min(...data.map(d => d.viewCount))
+                    const range = maxViews - minViews || 1
                     const x = (i / (data.length - 1)) * 380 + 10
-                    const y = 110 - ((d.upvotes - minUpvotes) / range) * 100
+                    const y = 110 - ((d.viewCount - minViews) / range) * 100
                     
                     return (
                       <circle
@@ -267,7 +267,7 @@ export default function TrendChart({ toolId, toolName, onClose }: TrendChartProp
         {/* Footer */}
         <div className="px-5 py-3 bg-cyber-muted/30 border-t border-cyber-border">
           <p className="text-xs text-cyber-muted-foreground font-mono text-center">
-            {'>'} 数据每日自动更新 // 热度基于点赞和浏览量计算
+            {'>'} 数据每日自动更新 // 热度基于浏览量计算
           </p>
         </div>
       </div>

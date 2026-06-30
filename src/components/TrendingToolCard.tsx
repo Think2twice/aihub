@@ -53,8 +53,8 @@ export default function TrendingToolCard({ tool, rank, tab }: TrendingToolCardPr
     const sorted = [...tool.trendHistories].sort((a, b) => a.date.localeCompare(b.date))
     const oldest = sorted[0]
     const newest = sorted[sorted.length - 1]
-    if (oldest.upvotes <= 0) return null
-    return Math.round(((newest.upvotes - oldest.upvotes) / oldest.upvotes) * 100)
+    if (oldest.viewCount <= 0) return null
+    return Math.round(((newest.viewCount - oldest.viewCount) / oldest.viewCount) * 100)
   }
   const changePercent = calcChange()
 
