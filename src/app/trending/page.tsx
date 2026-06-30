@@ -27,10 +27,10 @@ export default async function TrendingPage({ searchParams }: TrendingPageProps) 
   let tools: any[] = []
 
   if (tab === 'trending') {
-    // 热度飙升 - 按upvotes排序，同时获取昨日排名用于计算变化
+    // 热度飙升 - 按总浏览量排序
     tools = await prisma.tool.findMany({
       where: baseWhere,
-      orderBy: { upvotes: 'desc' },
+      orderBy: { viewCount: 'desc' },
       take: 20,
       include: { category: true, trendHistories: { orderBy: { date: 'desc' }, take: 2 } },
     })
