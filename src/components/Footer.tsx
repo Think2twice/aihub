@@ -139,7 +139,7 @@ export default function Footer() {
                 <TelegramIcon className="w-5 h-5" />
               </a>
               <a 
-                href="mailto:508002830@qq.com" 
+                href="mailto:aihub@office.bo.edu.kg" 
                 title="商务合作"
                 className="text-cyber-muted-foreground hover:text-neon-green transition-colors"
               >
@@ -147,7 +147,7 @@ export default function Footer() {
               </a>
             </div>
             <a 
-              href="mailto:508002830@qq.com"
+              href="mailto:aihub@office.bo.edu.kg"
               className="text-xs text-cyber-muted-foreground mt-2 font-mono hover:text-neon-green transition-colors block"
             >
               商务合作
