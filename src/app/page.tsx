@@ -6,6 +6,7 @@ import Footer from '@/components/Footer'
 import ToolCard from '@/components/ToolCard'
 import { getShareImages } from '@/lib/share-image'
 import CategoryGridClient from './CategoryGridClient'
+import TodayHot from '@/components/TodayHot'
 
 // 全部分类的图标和颜色映射（用于首页探索AI工具区域）
 const CATEGORY_ICONS: Record<string, string> = {
@@ -305,30 +306,39 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 热门话题标签 */}
-      {hotTags.length > 0 && (
-        <section className="py-8 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="text-xs font-orbitron font-bold text-neon-cyan uppercase tracking-wider">🏷️ 热门话题</span>
-              <div className="flex-1 h-px bg-gradient-to-r from-neon-cyan/50 to-transparent" />
+      {/* 今日最热 + 热门话题 */}
+      <section className="py-8 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1">
+              <TodayHot />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {hotTags.map(([tag, count]) => (
-                <Link
-                  key={tag}
-                  href={`/user-share?search=${encodeURIComponent(tag)}`}
-                  className="group inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono border border-cyber-border bg-cyber-card hover:border-neon-cyan/50 hover:text-neon-cyan hover:bg-neon-cyan/5 transition-all duration-200"
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
-                >
-                  <span>#{tag}</span>
-                  <span className="text-[10px] text-cyber-muted-foreground/50 group-hover:text-neon-cyan/50">{count}</span>
-                </Link>
-              ))}
+            <div className="lg:col-span-3">
+              {hotTags.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-xs font-orbitron font-bold text-neon-cyan uppercase tracking-wider">🏷️ 热门话题</span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-neon-cyan/50 to-transparent" />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {hotTags.map(([tag, count]) => (
+                      <Link
+                        key={tag}
+                        href={`/user-share?search=${encodeURIComponent(tag)}`}
+                        className="group inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono border border-cyber-border bg-cyber-card hover:border-neon-cyan/50 hover:text-neon-cyan hover:bg-neon-cyan/5 transition-all duration-200"
+                        style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
+                      >
+                        <span>#{tag}</span>
+                        <span className="text-[10px] text-cyber-muted-foreground/50 group-hover:text-neon-cyan/50">{count}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* User Shares */}
       <section className="py-16 relative">
