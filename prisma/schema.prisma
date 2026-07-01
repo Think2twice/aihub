@@ -474,3 +474,13 @@ model Announcement {
 
   @@map("announcements")
 }
+
+// 在线访客追踪（用于实时显示在线人数）
+model OnlineVisitor {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  lastSeen  DateTime @default(now())
+
+  @@index([lastSeen])
+  @@map("online_visitors")
+}
