@@ -44,13 +44,6 @@ const DAYS_LIMIT = 30
 // 从 RSS 源获取最新 AI 工具
 async function fetchFromRSS(itemLimit: number = 10): Promise<any[]> {
   const thirtyDaysAgo = new Date(Date.now() - DAYS_LIMIT * 24 * 60 * 60 * 1000)
-    { name: '量子位', url: 'https://www.qbitai.com/rss' },
-    { name: 'MarkTechPost', url: 'https://www.marktechpost.com/feed/' },
-    { name: 'TechCrunch AI', url: 'https://techcrunch.com/category/artificial-intelligence/feed/' },
-    { name: 'The Verge AI', url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml' },
-  ]
-  
-  const thirtyDaysAgo = new Date(Date.now() - DAYS_LIMIT * 24 * 60 * 60 * 1000)
   
   // 并行抓取所有 RSS 源
   const results = await Promise.allSettled(rssSources.map(async (source) => {
