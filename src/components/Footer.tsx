@@ -21,20 +21,11 @@ function BilibiliIcon({ className }: { className?: string }) {
   )
 }
 
-// Hugging Face 图标（🤗 风格）
-function HuggingFaceIcon({ className }: { className?: string }) {
+// X/Twitter 图标组件
+function XIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      {/* 脸 */}
-      <circle cx="12" cy="12" r="9" strokeWidth="1.8"/>
-      {/* 眼睛 */}
-      <circle cx="8.5" cy="10" r="1" fill="currentColor" stroke="none"/>
-      <circle cx="15.5" cy="10" r="1" fill="currentColor" stroke="none"/>
-      {/* 微笑 */}
-      <path d="M8 15c0 0 1.5 2 4 2s4-2 4-2" strokeWidth="1.5"/>
-      {/* 托腮的手 */}
-      <path d="M3 13c0 0 2-2.5 5-1" strokeWidth="1.5" opacity="0.7"/>
-      <path d="M21 13c0 0-2-2.5-5-1" strokeWidth="1.5" opacity="0.7"/>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
     </svg>
   )
 }
@@ -113,13 +104,13 @@ export default function Footer() {
                 <Github className="w-5 h-5" />
               </a>
               <a 
-                href="https://huggingface.co/SharwPeng" 
+                href="https://x.com/PengSharw9966" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                title="Hugging Face"
-                className="text-cyber-muted-foreground hover:text-neon-yellow transition-colors"
+                title="X (Twitter)"
+                className="text-cyber-muted-foreground hover:text-neon-green transition-colors"
               >
-                <HuggingFaceIcon className="w-5 h-5" />
+                <XIcon className="w-5 h-5" />
               </a>
               <a 
                 href="https://b23.tv/smNNJTa" 
