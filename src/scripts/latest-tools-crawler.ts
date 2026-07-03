@@ -156,13 +156,22 @@ async function saveTools(tools: any[]) {
   
   if (tools.length === 0) return { saved, skipped }
   
-  // 第一步：批量预查所有 slug（1次查询代替 N 次逐条查询）
+  // 第一步：批量预查所有 slug、websiteUrl、githubUrl（1次查询代替 N 次逐条查询）
   const slugs = tools.map(t => generateSlug(t.name))
+  const urls = tools.flatMap(t => [t.websiteUrl, t.githubUrl].filter(Boolean) as string[])
+  
   const existingTools = await prisma.tool.findMany({
-    where: { slug: { in: slugs } },
-    select: { id: true, slug: true }
+    where: {
+      OR: [
+        { slug: { in: slugs } },
+        ...(urls.length > 0 ? [{ websiteUrl: { in: urls } }] : []),
+        ...(urls.length > 0 ? [{ githubUrl: { in: urls } }] : []),
+      ]
+    },
+    select: { id: true, slug: true, websiteUrl: true, githubUrl: true }
   })
   const existingSlugs = new Set(existingTools.map(t => t.slug))
+  const existingUrls = new Set(existingTools.flatMap(t => [t.websiteUrl, t.githubUrl].filter(Boolean)))
   const existingMap = new Map(existingTools.map(t => [t.slug, t]))
   
   // 缓存"其他工具"分类
@@ -179,13 +188,19 @@ async function saveTools(tools: any[]) {
   const tasks = tools.map(async (tool) => {
     const slug = generateSlug(tool.name)
     
-    // 跳过已存在的
-    if (existingSlugs.has(slug)) {
-      const existing = existingMap.get(slug)!
-      await prisma.tool.update({
-        where: { id: existing.id },
-        data: { publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : undefined }
-      })
+    // 跳过已存在的（slug、websiteUrl、githubUrl 任一匹配即跳过）
+    if (existingSlugs.has(slug) || 
+        (tool.websiteUrl && existingUrls.has(tool.websiteUrl)) ||
+        (tool.githubUrl && existingUrls.has(tool.githubUrl))) {
+      // 找到匹配的已存在记录（可能匹配的是 slug、websiteUrl 或 githubUrl）
+      const existing = existingMap.get(slug) || 
+        existingTools.find(t => t.websiteUrl === tool.websiteUrl || t.githubUrl === tool.githubUrl)
+      if (existing) {
+        await prisma.tool.update({
+          where: { id: existing.id },
+          data: { publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : undefined }
+        })
+      }
       return { status: 'skipped', name: tool.name }
     }
     
