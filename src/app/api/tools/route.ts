@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notification'
 import { uploadImage, parseBase64Image, isR2Configured } from '@/lib/r2'
+import { isAllowedRequestOrigin } from '@/lib/site-origin'
 
 // CORS 头 + 缓存控制（5分钟CDN缓存，降低Supabase带宽消耗）
 const CORS = { 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
   // 仅允许本站服务器渲染使用，外部请求返回 403
   const origin = request.headers.get('origin') || ''
   const host = request.headers.get('host') || ''
-  const allowed = origin.includes('ai999999.top') || host.includes('ai999999.top') || !origin
+  const allowed = isAllowedRequestOrigin({ origin, host })
   if (!allowed) {
     return NextResponse.json({ error: 'API 已关闭外部访问' }, { status: 403 })
   }

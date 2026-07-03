@@ -4,19 +4,13 @@
  * 功能2：安全响应头（兜底保护，next.config.js 的 headers 对所有路由生效）
  */
 import { NextRequest, NextResponse } from 'next/server'
+import { getCorsHeaders } from '@/lib/site-origin'
 
 // 安全响应头（兜底 - 如果 next.config.js 的 headers() 在某些边缘情况不生效）
 const SECURITY_HEADERS: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-}
-
-// CORS 头（限制为本站域名，阻止外部网站跨域调用）
-const CORS_HEADERS: Record<string, string> = {
-  'Access-Control-Allow-Origin': 'https://ai999999.top',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
 // 内存限流
@@ -85,8 +79,13 @@ export function middleware(request: NextRequest) {
   }
 
   // === CORS：处理 OPTIONS 预检请求 ===
+  const corsHeaders = getCorsHeaders({
+    origin: request.headers.get('origin'),
+    currentOrigin: request.nextUrl.origin,
+  })
+
   if (request.method === 'OPTIONS') {
-    return new NextResponse(null, { status: 204, headers: { ...CORS_HEADERS, ...SECURITY_HEADERS } })
+    return new NextResponse(null, { status: 204, headers: { ...corsHeaders, ...SECURITY_HEADERS } })
   }
 
   const isHF = userAgent.includes('HuggingFace') || request.headers.get('origin')?.includes('hf.space')
@@ -120,7 +119,7 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
   // 对 API 响应追加 CORS + 安全头
-  for (const [key, value] of Object.entries({ ...CORS_HEADERS, ...SECURITY_HEADERS })) {
+  for (const [key, value] of Object.entries({ ...corsHeaders, ...SECURITY_HEADERS })) {
     response.headers.set(key, value)
   }
   return response
