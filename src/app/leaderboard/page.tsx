@@ -179,7 +179,7 @@ function stringToColor(str: string): string {
 }
 
 export default async function LeaderboardPage({ searchParams }: Props) {
-  const tab = (searchParams.tab as TabKey) || 'shares'
+  const tab = (searchParams.tab as TabKey) || 'trending'
   const validTab = tab in TAB_CONFIG ? tab : 'shares'
   const data = await getLeaderboard(validTab)
   const config = TAB_CONFIG[validTab]
