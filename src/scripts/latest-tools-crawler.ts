@@ -167,73 +167,73 @@ async function saveTools(tools: any[]) {
   const existingUrls = new Set(existingTools.flatMap(t => [t.websiteUrl, t.githubUrl].filter(Boolean)))
   const existingMap = new Map(existingTools.map(t => [t.slug, t]))
   
-  // 缓存"其他工具"分类
+  // 预缓存"其他工具"分类（避免并行时争抢连接）
   let otherCategoryId: number | null = null
-  const getOther = async () => {
-    if (!otherCategoryId) {
-      const other = await prisma.category.findFirst({ where: { name: '其他工具' } })
-      otherCategoryId = other?.id || null
-    }
-    return otherCategoryId
-  }
+  try {
+    const other = await prisma.category.findFirst({ where: { name: '其他工具' } })
+    otherCategoryId = other?.id || null
+  } catch {}
   
-  // 第二步：并行处理所有工具（已有 slug 匹配的跳过，不存在的创建）
-  const tasks = tools.map(async (tool) => {
-    const slug = generateSlug(tool.name)
-    
-    // 跳过已存在的（slug、websiteUrl、githubUrl 任一匹配即跳过）
-    if (existingSlugs.has(slug) || 
-        (tool.websiteUrl && existingUrls.has(tool.websiteUrl)) ||
-        (tool.githubUrl && existingUrls.has(tool.githubUrl))) {
-      // 找到匹配的已存在记录（可能匹配的是 slug、websiteUrl 或 githubUrl）
-      const existing = existingMap.get(slug) || 
-        existingTools.find(t => t.websiteUrl === tool.websiteUrl || t.githubUrl === tool.githubUrl)
-      if (existing) {
-        await prisma.tool.update({
-          where: { id: existing.id },
-          data: { publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : undefined }
+  // 第二步：分批并行处理（每批3个，不超过连接池限制）
+  const CONCURRENCY = 3
+  const results: { status: string; name: string }[] = []
+  
+  for (let i = 0; i < tools.length; i += CONCURRENCY) {
+    const batch = tools.slice(i, i + CONCURRENCY)
+    const batchResults = await Promise.all(batch.map(async (tool) => {
+      const slug = generateSlug(tool.name)
+      
+      // 跳过已存在的（slug、websiteUrl、githubUrl 任一匹配即跳过）
+      if (existingSlugs.has(slug) || 
+          (tool.websiteUrl && existingUrls.has(tool.websiteUrl)) ||
+          (tool.githubUrl && existingUrls.has(tool.githubUrl))) {
+        const existing = existingMap.get(slug) || 
+          existingTools.find(t => t.websiteUrl === tool.websiteUrl || t.githubUrl === tool.githubUrl)
+        if (existing) {
+          await prisma.tool.update({
+            where: { id: existing.id },
+            data: { publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : undefined }
+          })
+        }
+        return { status: 'skipped', name: tool.name }
+      }
+      
+      // 自动分类（纯本地关键词匹配，很快）
+      let categoryId = null
+      try {
+        categoryId = await autoCategorize({
+          name: tool.name,
+          description: tool.shortDesc || tool.description,
+          tags: tool.tags,
         })
+      } catch {}
+      
+      if (!categoryId) {
+        categoryId = otherCategoryId
       }
-      return { status: 'skipped', name: tool.name }
-    }
-    
-    // 自动分类（纯本地关键词匹配，很快）
-    let categoryId = null
-    try {
-      categoryId = await autoCategorize({
-        name: tool.name,
-        description: tool.shortDesc || tool.description,
-        tags: tool.tags,
+      
+      const desc = tool.shortDesc || tool.description || ''
+      
+      await prisma.tool.create({
+        data: {
+          name: cleanText(tool.name),
+          slug,
+          ...(desc.length > 110 ? { description: desc } : {}),
+          shortDesc: desc.slice(0, 100),
+          websiteUrl: tool.websiteUrl || '',
+          githubUrl: tool.githubUrl || '',
+          stars: tool.stars || 0, upvotes: 0,
+          isOpenSource: tool.isOpenSource,
+          tags: cleanText(tool.tags), source: cleanText(tool.source),
+          sourceUrl: cleanText(tool.sourceUrl),
+          publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : new Date(),
+          categoryId, status: 'approved', isActive: true
+        }
       })
-    } catch {}
-    
-    if (!categoryId) {
-      categoryId = await getOther()
-    }
-    
-    const desc = tool.shortDesc || tool.description || ''
-    
-    await prisma.tool.create({
-      data: {
-        name: cleanText(tool.name),
-        slug,
-        ...(desc.length > 110 ? { description: desc } : {}),
-        shortDesc: desc.slice(0, 100),
-        websiteUrl: tool.websiteUrl || '',
-        githubUrl: tool.githubUrl || '',
-        stars: tool.stars || 0, upvotes: 0,
-        isOpenSource: tool.isOpenSource,
-        tags: cleanText(tool.tags), source: cleanText(tool.source),
-        sourceUrl: cleanText(tool.sourceUrl),
-        publishedAt: tool.publishedAt ? new Date(tool.publishedAt) : new Date(),
-        categoryId, status: 'approved', isActive: true
-      }
-    })
-    return { status: 'saved', name: tool.name }
-  })
-  
-  // 并行执行所有写入
-  const results = await Promise.all(tasks)
+      return { status: 'saved', name: tool.name }
+    }))
+    results.push(...batchResults)
+  }
   
   for (const r of results) {
     if (r.status === 'saved') {
