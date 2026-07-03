@@ -1,17 +1,6 @@
 import nodemailer from 'nodemailer'
 import { prisma } from './prisma'
 
-// 邮件配置
-const transporter = nodemailer.createTransport({
-  host: 'smtp.qq.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.QQ_EMAIL || '',
-    pass: process.env.QQ_EMAIL_AUTH_CODE || '',
-  },
-})
-
 export interface SendEmailOptions {
   to: string
   subject: string
@@ -19,15 +8,69 @@ export interface SendEmailOptions {
   text?: string
 }
 
+interface EmailConfig {
+  host: string
+  port: number
+  secure: boolean
+  user: string
+  pass: string
+  from: string
+  fromName: string
+}
+
+function envFlag(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined) return fallback
+  return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase())
+}
+
+function getEmailConfig(): EmailConfig | null {
+  const hasResendKey = Boolean(process.env.RESEND_API_KEY)
+  const legacyQQUser = process.env.QQ_EMAIL || ''
+
+  const host = process.env.SMTP_HOST || (hasResendKey ? 'smtp.resend.com' : legacyQQUser ? 'smtp.qq.com' : '')
+  const port = Number(process.env.SMTP_PORT || '465')
+  const user = process.env.SMTP_USER || (hasResendKey ? 'resend' : legacyQQUser)
+  const pass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || process.env.RESEND_API_KEY || process.env.QQ_EMAIL_AUTH_CODE || ''
+  const from = process.env.EMAIL_FROM || process.env.SMTP_FROM || (hasResendKey ? 'noreply@mail.formyweblym.top' : legacyQQUser)
+  const fromName = process.env.EMAIL_FROM_NAME || process.env.SMTP_FROM_NAME || 'AIHub'
+
+  if (!host || !port || !user || !pass || !from) return null
+
+  return {
+    host,
+    port,
+    secure: envFlag(process.env.SMTP_SECURE, port === 465),
+    user,
+    pass,
+    from,
+    fromName,
+  }
+}
+
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 // 发送邮件
 export async function sendEmail(options: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!process.env.QQ_EMAIL || !process.env.QQ_EMAIL_AUTH_CODE) {
-      return { success: false, error: '邮件服务未配置：请在 .env 中填写 QQ_EMAIL 和 QQ_EMAIL_AUTH_CODE' }
+    const emailConfig = getEmailConfig()
+    if (!emailConfig) {
+      return { success: false, error: '邮件服务未配置：请配置 SMTP_HOST、SMTP_USER、SMTP_PASS 和 EMAIL_FROM' }
     }
 
+    const transporter = nodemailer.createTransport({
+      host: emailConfig.host,
+      port: emailConfig.port,
+      secure: emailConfig.secure,
+      auth: {
+        user: emailConfig.user,
+        pass: emailConfig.pass,
+      },
+    })
+
     const info = await transporter.sendMail({
-      from: `"AI工具导航" <${process.env.QQ_EMAIL}>`,
+      from: `"${emailConfig.fromName}" <${emailConfig.from}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -46,11 +89,11 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
 export async function sendVerificationCode(email: string, code: string): Promise<{ success: boolean; error?: string }> {
   return sendEmail({
     to: email,
-    subject: '【AI工具导航】验证码',
+    subject: '【AIHub】验证码',
     html: `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-          <h2 style="color: #0a0a0f; margin: 0;">🤖 AI工具导航</h2>
+          <h2 style="color: #0a0a0f; margin: 0;">AIHub</h2>
         </div>
         <div style="background: #12121a; padding: 30px; border-radius: 0 0 12px 12px; border: 1px solid #2a2a3a;">
           <p style="color: #aaa; font-size: 14px; margin: 0 0 16px;">你正在注册/绑定邮箱，验证码为：</p>

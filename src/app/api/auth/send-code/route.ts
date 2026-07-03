@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateCode, saveVerificationCode, sendVerificationCode } from '@/lib/email'
+import { generateCode, isValidEmail, saveVerificationCode, sendVerificationCode } from '@/lib/email'
 import { prisma } from '@/lib/prisma'
 
 // 频率限制：记录每个邮箱的最近发送时间
@@ -37,15 +37,15 @@ async function logVerification(params: {
 // 发送邮箱验证码
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
+    const { email: rawEmail } = await request.json()
+    const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : ''
 
-    if (!email || typeof email !== 'string') {
+    if (!email) {
       return NextResponse.json({ error: '请输入邮箱地址' }, { status: 400 })
     }
 
-    // 邮箱格式校验（仅支持QQ邮箱）
-    if (!email.endsWith('@qq.com')) {
-      return NextResponse.json({ error: '目前仅支持QQ邮箱注册' }, { status: 400 })
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: '请输入有效的邮箱地址' }, { status: 400 })
     }
 
     const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()

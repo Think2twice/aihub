@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
-import { verifyCode } from '@/lib/email'
+import { isValidEmail, verifyCode } from '@/lib/email'
 
 // 写入验证码日志
 async function logVerification(params: {
@@ -25,7 +25,7 @@ async function logVerification(params: {
 export async function POST(request: NextRequest) {
   try {
     const { username, email: rawEmail, password, code } = await request.json()
-    const email = rawEmail?.toLowerCase()
+    const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : ''
     const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null
     const userAgent = request.headers.get('user-agent') || null
 
@@ -43,9 +43,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 邮箱格式校验（仅支持QQ邮箱）
-    if (!email.endsWith('@qq.com')) {
-      return NextResponse.json({ error: '目前仅支持QQ邮箱注册' }, { status: 400 })
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: '请输入有效的邮箱地址' }, { status: 400 })
     }
 
     // 校验验证码

@@ -79,3 +79,5 @@ build.log
 
 # Article drafts (not project code)
 docs/
+.vercel
+.env*
