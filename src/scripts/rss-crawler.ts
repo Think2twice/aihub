@@ -62,12 +62,18 @@ async function translateSummary(text: string): Promise<string> {
 
 // 本地模型翻译（备用方案）
 async function translateWithLocalModel(text: string): Promise<string> {
+  const baseUrl = process.env.OLLAMA_BASE_URL || process.env.LOCAL_TRANSLATE_URL
+  if (!baseUrl) {
+    console.log('   ⚠️ 未配置本地翻译服务，跳过翻译')
+    return ''
+  }
+
   try {
-    const response = await fetch('http://localhost:11434/api/generate', {
+    const response = await fetch(`${baseUrl.replace(/\/$/, '')}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'qwen2.5:3b',
+        model: process.env.OLLAMA_TRANSLATE_MODEL || 'qwen2.5:3b',
         prompt: `请将以下英文内容翻译成简洁流畅的中文摘要（100字以内）：\n\n${text}\n\n中文摘要：`,
         stream: false
       })
