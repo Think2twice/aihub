@@ -521,6 +521,9 @@ async function importManualTools() {
           isOpenSource: isOpenSource,
           tags: tool.tags,
           categoryId: category?.id || null,
+          status: 'approved',
+          isActive: true,
+          publishedAt: new Date(),
           updatedAt: new Date(),
         },
         create: {
@@ -535,6 +538,7 @@ async function importManualTools() {
           tags: tool.tags,
           categoryId: category?.id || null,
           isActive: true,
+          status: 'approved',
           source: 'manual',
           publishedAt: new Date(),
         },
@@ -572,14 +576,14 @@ async function main() {
   for (let i = 0; i < allTools.length; i++) {
     const tool = allTools[i]
     await prisma.$executeRawUnsafe(
-      `INSERT INTO tool_trend_histories (toolId, date, upvotes, viewCount, stars, rank, createdAt, updatedAt)
+      `INSERT INTO tool_trend_histories ("toolId", date, upvotes, "viewCount", stars, rank, "createdAt", "updatedAt")
        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-       ON CONFLICT(toolId, date) DO UPDATE SET
+       ON CONFLICT("toolId", date) DO UPDATE SET
          upvotes = EXCLUDED.upvotes,
-         viewCount = EXCLUDED.viewCount,
+         "viewCount" = EXCLUDED."viewCount",
          stars = EXCLUDED.stars,
          rank = EXCLUDED.rank,
-         updatedAt = NOW()`,
+         "updatedAt" = NOW()`,
       tool.id, today, tool.upvotes, tool.viewCount, tool.stars, i + 1
     )
   }
