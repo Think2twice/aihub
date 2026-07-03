@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: '需要userId' }, { status: 400 })
 
     const records = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id, share_data, added_at FROM user_favorite_shares WHERE user_id = $1 ORDER BY added_at DESC`,
+      `SELECT id, "shareData", "addedAt" FROM user_favorite_shares WHERE "userId" = $1 ORDER BY "addedAt" DESC`,
       parseInt(userId)
     )
 
     const shares = records.map((r: any) => ({
-      ...JSON.parse(r.share_data),
-      addedAt: r.added_at?.toISOString?.() || r.added_at
+      ...JSON.parse(r.shareData),
+      addedAt: r.addedAt?.toISOString?.() || r.addedAt
     }))
 
     return NextResponse.json({ shares })
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !shareId) return NextResponse.json({ error: '参数不完整' }, { status: 400 })
 
     const existing = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id FROM user_favorite_shares WHERE user_id = $1 AND share_id = $2 LIMIT 1`,
+      `SELECT id FROM user_favorite_shares WHERE "userId" = $1 AND "shareId" = $2 LIMIT 1`,
       userId, shareId
     )
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     await prisma.$executeRawUnsafe(
-      `INSERT INTO user_favorite_shares (user_id, share_id, share_data) VALUES ($1, $2, $3)`,
+      `INSERT INTO user_favorite_shares ("userId", "shareId", "shareData") VALUES ($1, $2, $3)`,
       userId, shareId, JSON.stringify(shareData)
     )
     return NextResponse.json({ favorited: true })
@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest) {
     if (!userId || !shareId) return NextResponse.json({ error: '参数不完整' }, { status: 400 })
 
     await prisma.$executeRawUnsafe(
-      `DELETE FROM user_favorite_shares WHERE user_id = $1 AND share_id = $2`,
+      `DELETE FROM user_favorite_shares WHERE "userId" = $1 AND "shareId" = $2`,
       userId, shareId
     )
     return NextResponse.json({ message: '已删除' })

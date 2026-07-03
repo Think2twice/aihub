@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: '需要userId' }, { status: 400 })
 
     const records = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id, tool_data, added_at FROM user_favorite_tools WHERE user_id = $1 ORDER BY added_at DESC`,
+      `SELECT id, "toolData", "addedAt" FROM user_favorite_tools WHERE "userId" = $1 ORDER BY "addedAt" DESC`,
       parseInt(userId)
     )
 
     const favorites = records.map((r: any) => ({
-      ...JSON.parse(r.tool_data),
-      addedAt: r.added_at?.toISOString?.() || r.added_at
+      ...JSON.parse(r.toolData),
+      addedAt: r.addedAt?.toISOString?.() || r.addedAt
     }))
 
     return NextResponse.json({ favorites })
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !toolId) return NextResponse.json({ error: '参数不完整' }, { status: 400 })
 
     const existing = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id FROM user_favorite_tools WHERE user_id = $1 AND tool_id = $2 LIMIT 1`,
+      `SELECT id FROM user_favorite_tools WHERE "userId" = $1 AND "toolId" = $2 LIMIT 1`,
       userId, toolId
     )
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     await prisma.$executeRawUnsafe(
-      `INSERT INTO user_favorite_tools (user_id, tool_id, tool_data) VALUES ($1, $2, $3)`,
+      `INSERT INTO user_favorite_tools ("userId", "toolId", "toolData") VALUES ($1, $2, $3)`,
       userId, toolId, JSON.stringify(toolData)
     )
     return NextResponse.json({ favorited: true })
@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest) {
     if (!userId || !toolId) return NextResponse.json({ error: '参数不完整' }, { status: 400 })
 
     await prisma.$executeRawUnsafe(
-      `DELETE FROM user_favorite_tools WHERE user_id = $1 AND tool_id = $2`,
+      `DELETE FROM user_favorite_tools WHERE "userId" = $1 AND "toolId" = $2`,
       userId, toolId
     )
     return NextResponse.json({ message: '已删除' })

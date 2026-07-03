@@ -14,13 +14,13 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: '需要userId' }, { status: 400 })
 
     const records = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id, tool_data, liked_at FROM user_like_tools WHERE user_id = $1 ORDER BY liked_at DESC`,
+      `SELECT id, "toolData", "likedAt" FROM user_like_tools WHERE "userId" = $1 ORDER BY "likedAt" DESC`,
       parseInt(userId)
     )
 
     const likes = records.map((r: any) => ({
-      ...JSON.parse(r.tool_data),
-      likedAt: r.liked_at?.toISOString?.() || r.liked_at
+      ...JSON.parse(r.toolData),
+      likedAt: r.likedAt?.toISOString?.() || r.likedAt
     }))
 
     return NextResponse.json({ likes })
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // 只限制"点赞"操作，取消点赞不限制
     const existing = await prisma.$queryRawUnsafe<Array<any>>(
-      `SELECT id FROM user_like_tools WHERE user_id = $1 AND tool_id = $2 LIMIT 1`,
+      `SELECT id FROM user_like_tools WHERE "userId" = $1 AND "toolId" = $2 LIMIT 1`,
       userId, toolId
     )
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     await prisma.$executeRawUnsafe(
-      `INSERT INTO user_like_tools (user_id, tool_id, tool_data) VALUES ($1, $2, $3)`,
+      `INSERT INTO user_like_tools ("userId", "toolId", "toolData") VALUES ($1, $2, $3)`,
       userId, toolId, JSON.stringify(toolData)
     )
     // 记录点赞次数
@@ -129,7 +129,7 @@ export async function DELETE(request: NextRequest) {
     if (!userId || !toolId) return NextResponse.json({ error: '参数不完整' }, { status: 400 })
 
     await prisma.$executeRawUnsafe(
-      `DELETE FROM user_like_tools WHERE user_id = $1 AND tool_id = $2`,
+      `DELETE FROM user_like_tools WHERE "userId" = $1 AND "toolId" = $2`,
       userId, toolId
     )
     // 同步更新 tools 表的点赞数

@@ -93,7 +93,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
 
   // 获取该工具的点赞总数
   const likeCountResult = await prisma.$queryRawUnsafe<Array<{total: number}>>(
-    `SELECT COUNT(*) as total FROM user_like_tools WHERE tool_id = ${tool.id}`
+    `SELECT COUNT(*) as total FROM user_like_tools WHERE "toolId" = $1`,
+    tool.id
   )
   const likeCount = Number(likeCountResult[0]?.total || 0)
 
